@@ -1,10 +1,9 @@
 [![Build Status](https://travis-ci.org/OpenClovis/OpenYuma.png?branch=master)](https://travis-ci.org/OpenClovis/OpenYuma)
 
-OpenYuma
+OpenYuma for Default Values Mediator (DVM).
 ========
 
-Fork of the defacto standard Yuma project since it went proprietary.  Netconf
-is a management protocol (similar to SNMP) defined in RFC4741.
+Fork of the OpenYuma project. Changed for automatically generating DVMs from yang files.
 
 
 Testing with docker
