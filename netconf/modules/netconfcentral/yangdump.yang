@@ -323,6 +323,16 @@ module yangdump {
           type boolean;
           default false;
         }
+        
+        leaf dvm {
+          description 
+            "If 'true', then generated files will be compatible 
+             with DVM.
+
+             If 'false', DVM compatibility will be ignored.";
+          type boolean;
+          default false;
+        }
 
         leaf format {
           description 

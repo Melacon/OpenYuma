@@ -3688,6 +3688,9 @@ static status_t
     errinfo = NULL;
     typdef = obj_get_typdef(val->obj);
 
+    if (scb == NULL) //SIAE
+    	return res;	//SIAE
+
     switch (val->btyp) {
     case NCX_BT_LEAFREF:
         /* do a complete parsing to retrieve the

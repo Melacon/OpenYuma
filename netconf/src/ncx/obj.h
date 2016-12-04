@@ -3974,6 +3974,28 @@ extern obj_xpath_ptr_t *
 extern obj_xpath_ptr_t *
     obj_next_xpath_ptr (obj_xpath_ptr_t *xptr);
 
+/********************************************************************
+ * Print the xpath of an object along with its key elements for lists
+ *
+ * \param in: obj - the object for which we want the path
+ * \param out: buff - the buffer in which we are building the path
+ * \param out: retlen - the length of the buffer that we are returning
+ * \param in: keycount - the number of keys for which we need to print the key details
+ * \param in: keys_visited - the number of keys for which we already printed the key details
+ * \return
+ *********************************************************************/
+extern void
+    obj_print_xpath_with_keys (obj_template_t *obj, xmlChar *buff, uint32 *retlen, uint32 keycount, uint32 *keys_visited);
+
+/********************************************************************
+ * Check whether an object has a list child that is read-only
+ *
+ * \param in: obj - the object to check
+ * \return boolean - true if the object has a child of type OBJ_TYP_LIST that is not config
+ *********************************************************************/
+extern boolean
+    obj_has_list_child (obj_template_t *obj);
+
 
 #ifdef __cplusplus
 }  /* end extern 'C' */

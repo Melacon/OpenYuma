@@ -98,6 +98,7 @@ extern "C" {
 #define YANGDUMP_PARM_HTML_TOC      (const xmlChar *)"html-toc"
 #define YANGDUMP_PARM_IDENTIFIERS   (const xmlChar *)"identifiers"
 #define YANGDUMP_PARM_INDENT        (const xmlChar *)"indent"
+#define YANGDUMP_PARM_DVM			(const xmlChar *)"dvm"
 #define YANGDUMP_PARM_MODULE        (const xmlChar *)"module"
 #define YANGDUMP_PARM_MODVERSION    (const xmlChar *)"modversion"
 #define YANGDUMP_PARM_VERSIONNAMES  (const xmlChar *)"versionnames"
@@ -257,6 +258,7 @@ typedef struct yangdump_cvtparms_t_ {
     boolean         isuser;
     dlq_hdr_t       savedevQ;
     tk_chain_t     *tkc;   /* if docmode for format=html|yang */
+    boolean 		isdvm;
 } yangdump_cvtparms_t;
 
 #ifdef __cplusplus

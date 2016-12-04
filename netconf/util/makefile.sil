@@ -32,6 +32,8 @@ REAL_INST=$(DESTDIR)$(PREFIX)/lib/yuma
 REAL_BASE=$(DESTDIR)$(PREFIX)/lib
 endif
 
+BASE_NAME=Default_values_mediator_utils
+BASE_COMMON=../../$(BASE_NAME)
 
 #################### MAKE RULES ########################
 
@@ -39,6 +41,7 @@ all: sil_dummy sil_lib
 
 #################### PLATFORM DEFINITIONS ############
 CINCBASE=$(DESTDIR)$(PREFIX)/include
+CINCCOMMON=$(BASE_COMMON)/include
 
 CINC = -I.
 
@@ -50,7 +53,7 @@ CINC += -I$(CINCBASE)/yuma/platform -I$(CINCBASE)/yuma/ncx \
      -I$(CINCBASE)/yuma/agt 
 endif
 
-CINC += -I$(CINCBASE) -I$(CINCBASE)/libxml2 -I$(CINCBASE)/libxml2/libxml
+CINC += -I$(CINCBASE) -I$(CINCBASE)/libxml2 -I$(CINCBASE)/libxml2/libxml -I$(CINCCOMMON)
 
 ifdef FREEBSD
 CINC += -I/usr/local/include -I/usr/local/include/libxml2 \
@@ -254,7 +257,7 @@ superclean:
 
 ifndef MAC
 $(LIB_INST)/lib$(SUBDIR_NM).so: $(OBJS)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS)
+	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS) -L$(BASE_COMMON)/lib -l$(BASE_NAME)
 else
 $(LIB_INST)/lib$(SUBDIR_NM).so: $(OBJS)
 	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -bundle -std=gnu99 \

@@ -90,7 +90,7 @@ extern "C" {
 #define WILDCARD_URN   (const xmlChar *)""
     
 /* max number len to use for static buffer allocation only */
-#define NCX_MAX_NUMLEN   47
+#define NCX_MAX_NUMLEN   90
 
  /* all name fields in YANG can be 1 to N bytes
   * set a limit based on likely malloc failure

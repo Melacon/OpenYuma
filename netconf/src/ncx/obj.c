@@ -12029,6 +12029,110 @@ obj_xpath_ptr_t *
 
 }  /* obj_next_iffeature_ptr */
 
+/********************************************************************
+ * Print the xpath of an object along with its key elements for lists
+ *
+ * \param in: obj - the object for which we want the path
+ * \param out: buff - the buffer in which we are building the path
+ * \param out: retlen - the length of the buffer that we are returning
+ * \param in: keycount - the number of keys for which we need to print the key details
+ * \param in: keys_visited - the number of keys for which we already printed the key details
+ * \return
+ *********************************************************************/
+void
+    obj_print_xpath_with_keys (obj_template_t *obj, xmlChar *buff, uint32 *retlen, uint32 keycount, uint32 *keys_visited)
+{
+	*retlen = 0;
+	*keys_visited = 0;
 
+	if (obj_is_root(obj))
+	{
+//		printf("*******************\n");
+		return;
+	}
+
+	if (obj->parent != NULL)
+	{
+		obj_print_xpath_with_keys(obj->parent, buff, retlen, keycount, keys_visited);
+	}
+
+	if (obj->objtype == OBJ_TYP_LIST && *keys_visited < keycount)
+	{
+//		printf("/%s[%s=\"%%s\"]", obj_get_name(obj), obj_get_keystr(obj));
+		if (buff)
+		{
+			xml_strcpy(&buff[*retlen], "/");
+		}
+		*retlen += 1;
+		if (buff)
+		{
+			xml_strcpy(&buff[*retlen], obj_get_name(obj));
+		}
+		*retlen += strlen(obj_get_name(obj));
+		if (buff)
+		{
+			xml_strcpy(&buff[*retlen], "[");
+		}
+		*retlen += 1;
+		if (buff)
+		{
+			xml_strcpy(&buff[*retlen], obj_get_keystr(obj));
+		}
+		*retlen += strlen(obj_get_keystr(obj));
+		if (buff)
+		{
+			obj_key_t *key = obj_first_key(obj);
+			ncx_btype_t btyp = obj_get_basetype(key->keyobj);
+			if (typ_is_number(btyp))
+			{
+				xml_strcpy(&buff[*retlen], "=\\\"%d\\\"]");
+			}
+			else
+			{
+				xml_strcpy(&buff[*retlen], "=\\\"%s\\\"]");
+			}
+		}
+		*retlen += 8;
+		*keys_visited += 1;
+	}
+	else
+	{
+//		printf("/%s", obj_get_name(obj));
+		if (buff)
+		{
+			xml_strcpy(&buff[*retlen], "/");
+		}
+		*retlen += 1;
+		if (buff)
+		{
+			xml_strcpy(&buff[*retlen], obj_get_name(obj));
+		}
+		*retlen += strlen(obj_get_name(obj));
+	}
+}
+
+/********************************************************************
+ * Check whether an object has a list child that is read-only
+ *
+ * \param in: obj - the object to check
+ * \return boolean - true if the object has a child of type OBJ_TYP_LIST that is not config
+ *********************************************************************/
+boolean
+    obj_has_list_child (obj_template_t *obj)
+{
+	obj_template_t* childobj;
+
+	for (childobj = obj_first_child(obj);
+	         childobj != NULL;
+	         childobj = obj_next_child(childobj))
+	{
+		if (childobj->objtype == OBJ_TYP_LIST && !obj_get_config_flag(obj))
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
 
 /* END obj.c */

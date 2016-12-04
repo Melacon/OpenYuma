@@ -394,6 +394,16 @@ static status_t
         cp->indent = NCX_DEF_INDENT;
     }
 
+    /* dvm parameter */
+	val = val_find_child(valset,
+						 YANGDUMP_MOD,
+						 YANGDUMP_PARM_DVM);
+	if (val && val->res == NO_ERR) {
+		cp->isdvm = (boolean)VAL_BOOL(val);
+	} else {
+		cp->isdvm = false;
+	}
+
     /* help parameter */
     val = val_find_child(valset, 
                          YANGDUMP_MOD, 

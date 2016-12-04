@@ -73,7 +73,13 @@ date         init     comment
 *                       V A R I A B L E S                           *
 *                                                                   *
 *********************************************************************/
-
+static void
+	write_c_add_list_entry_fn (ses_cb_t *scb,
+                    ncx_module_t *mod,
+                    const yangdump_cvtparms_t *cp,
+                    obj_template_t *obj,
+                    boolean fullmode,
+                    dlq_hdr_t *objnameQ);
 
 /********************************************************************
 * FUNCTION write_cb_logging_init
@@ -1192,6 +1198,13 @@ static void
     }
     ses_putstr(scb, cdef->idstr);
     ses_putstr(scb, GET_SUFFIX);
+    if (cp->isdvm)
+    {
+		if (obj_is_key(obj))
+		{
+			ses_putstr(scb, "_keys");
+		}
+    }
     ses_putstr(scb, FN_BANNER_LN);
     ses_putstr(scb, FN_BANNER_LN);
     ses_putstr(scb, (const xmlChar *)"Get database object callback");
@@ -1219,22 +1232,77 @@ static void
     }
     ses_putstr(scb, cdef->idstr);
     ses_putstr(scb, GET_SUFFIX);
+    if (cp->isdvm)
+    {
+		if (obj_is_key(obj))
+		{
+			ses_putstr(scb, "_keys");
+		}
+    }
     ses_putstr(scb, (const xmlChar *)" (");
     if (cp->isuser) {
         ses_putstr_indent(scb, (const xmlChar *)"val_value_t *dstval", indent);
-        if (keycount) {
-            ses_putchar(scb, ',');
-            write_c_key_params(scb, obj, objnameQ, keycount, indent);
+        if (cp->isdvm)
+		{
+			if (obj_is_key(obj))
+			{
+				if (keycount) {
+					ses_putchar(scb, ',');
+					write_c_key_params(scb, obj->parent->parent, objnameQ, keycount - 1, indent);
+				}
+				ses_putchar(scb, ',');
+				ses_putstr_indent(scb, (const xmlChar *)"xmlChar **list_key_entries,", indent);
+				ses_putstr_indent(scb, (const xmlChar *)"int *num_of_keys", indent);
+			}
+			else
+			{
+				if (keycount) {
+					ses_putchar(scb, ',');
+					write_c_key_params(scb, obj, objnameQ, keycount, indent);
+				}
+			}
+		}
+        else
+        {
+			if (keycount) {
+				ses_putchar(scb, ',');
+				write_c_key_params(scb, obj, objnameQ, keycount, indent);
+			}
         }
         ses_putchar(scb, ')');
     } else {
-        ses_putstr_indent(scb, (const xmlChar *)"ses_cb_t *scb,", indent);
-        ses_putstr_indent(scb, (const xmlChar *)"getcb_mode_t cbmode,", 
-                          indent);
-        ses_putstr_indent(scb, (const xmlChar *)"const val_value_t *virval,",
-                          indent);
-        ses_putstr_indent(scb, (const xmlChar *)"val_value_t *dstval)", 
-                          indent);
+    	if (cp->isdvm)
+		{
+			if (obj_is_key(obj))
+			{
+				ses_putstr_indent(scb, (const xmlChar *)"val_value_t *dstval,",
+								  indent);
+				ses_putstr_indent(scb, (const xmlChar *)"xmlChar **list_key_entries,",
+								  indent);
+				ses_putstr_indent(scb, (const xmlChar *)"int *num_of_keys)",
+								  indent);
+			}
+			else
+			{
+				ses_putstr_indent(scb, (const xmlChar *)"ses_cb_t *scb,", indent);
+				ses_putstr_indent(scb, (const xmlChar *)"getcb_mode_t cbmode,",
+								  indent);
+				ses_putstr_indent(scb, (const xmlChar *)"const val_value_t *virval,",
+								  indent);
+				ses_putstr_indent(scb, (const xmlChar *)"val_value_t *dstval)",
+								  indent);
+			}
+		}
+    	else
+    	{
+			ses_putstr_indent(scb, (const xmlChar *)"ses_cb_t *scb,", indent);
+			ses_putstr_indent(scb, (const xmlChar *)"getcb_mode_t cbmode,",
+							  indent);
+			ses_putstr_indent(scb, (const xmlChar *)"const val_value_t *virval,",
+							  indent);
+			ses_putstr_indent(scb, (const xmlChar *)"val_value_t *dstval)",
+							  indent);
+    	}
     }
 
     if (uprotomode) {
@@ -1251,11 +1319,46 @@ static void
     case NCX_CVTTYP_C:
     case NCX_CVTTYP_CPP_TEST:
     case NCX_CVTTYP_UC:
-        ses_indent(scb, indent);
-        write_c_objtype_ex(scb, obj, objnameQ, ';', TRUE, FALSE);
+    	if (cp->isdvm)
+    	{
+    		if (obj_is_key(obj))
+    		{
+    			break;
+    		}
+    		else
+    		{
+    			ses_putstr_indent(scb, (const xmlChar * )"xmlChar *", indent);
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putchar(scb, ';');
+    		}
+    	}
+    	else
+    	{
+    		ses_indent(scb, indent);
+        	write_c_objtype_ex(scb, obj, objnameQ, ';', TRUE, FALSE);
+    	}
         break;
     case NCX_CVTTYP_YC:
-        if (keycount) {
+    	if (cp->isdvm)
+		{
+			if (obj_is_key(obj) && (keycount - 1))
+			{
+	            ses_putstr_indent(scb,
+	                              (const xmlChar *)"val_value_t *lastkey = NULL;",
+	                              indent);
+	            /* add the key local variables */
+	            write_c_key_vars(scb, obj->parent->parent, objnameQ, PARM_DSTVAL, keycount - 1, indent);
+			}
+			else if (keycount)
+			{
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"val_value_t *lastkey = NULL;",
+								  indent);
+				/* add the key local variables */
+				write_c_key_vars(scb, obj, objnameQ, PARM_DSTVAL, keycount, indent);
+			}
+		}
+    	else if (keycount) {
             ses_putstr_indent(scb, 
                               (const xmlChar *)"val_value_t *lastkey = NULL;",
                               indent);
@@ -1280,6 +1383,10 @@ static void
     }
     ses_putstr(scb, cdef->idstr);
     ses_putstr(scb, GET_SUFFIX);
+    if (obj_is_key(obj))
+	{
+		ses_putstr(scb, "_keys");
+	}
     ses_putstr(scb, (const xmlChar *)" callback\");");
     ses_putstr_indent(scb, (const xmlChar *)"}", indent);
 
@@ -1301,34 +1408,37 @@ static void
     case NCX_CVTTYP_CPP_TEST:
     case NCX_CVTTYP_YC:
         /* print message about removing (void)foo; line */
-        ses_putchar(scb, '\n');
-        ses_putstr_indent(scb,
-                          (const xmlChar *)"/* remove the next line "
-                          "if scb is used */",
-                          indent);
-        ses_putstr_indent(scb,
-                          (const xmlChar *)"(void)scb;",
-                          indent);
+    	if (!cp->isdvm || (cp->isdvm && !obj_is_key(obj)))
+    	{
+			ses_putchar(scb, '\n');
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"/* remove the next line "
+							  "if scb is used */",
+							  indent);
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"(void)scb;",
+							  indent);
 
-        ses_putchar(scb, '\n');
-        ses_putstr_indent(scb,
-                          (const xmlChar *)"/* remove the next line "
-                          "if virval is used */",
-                          indent);
-        ses_putstr_indent(scb,
-                          (const xmlChar *)"(void)virval;",
-                          indent);
+			ses_putchar(scb, '\n');
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"/* remove the next line "
+							  "if virval is used */",
+							  indent);
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"(void)virval;",
+							  indent);
 
-        /* generate if-stmt to screen out any other mode except 'get' */
-        ses_putchar(scb, '\n');
-        ses_putstr_indent(scb,
-                          (const xmlChar *)"if (cbmode != GETCB_GET_VALUE) {",
-                          indent);
-        ses_putstr_indent(scb,
-                          (const xmlChar *)"return ERR_NCX_OPERATION"
-                          "_NOT_SUPPORTED;",
-                          indent+indent);
-        ses_putstr_indent(scb, (const xmlChar *)"}", indent);
+			/* generate if-stmt to screen out any other mode except 'get' */
+			ses_putchar(scb, '\n');
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"if (cbmode != GETCB_GET_VALUE) {",
+							  indent);
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"return ERR_NCX_OPERATION"
+							  "_NOT_SUPPORTED;",
+							  indent+indent);
+			ses_putstr_indent(scb, (const xmlChar *)"}", indent);
+    	}
         break;
     default:
         ;
@@ -1339,6 +1449,47 @@ static void
     case NCX_CVTTYP_C:
     case NCX_CVTTYP_CPP_TEST:
     case NCX_CVTTYP_UC:
+    	if (cp->isdvm == true)
+    	{
+    		ses_putstr_indent(scb,
+							  (const xmlChar *)"xmlChar *xpathexpr[XPATH_MAX_LENGTH];",
+							  indent);
+    		ses_putstr_indent(scb,
+							  (const xmlChar *)"sprintf(xpathexpr, \"",
+							  indent);
+    		xmlChar *buff = NULL;
+			uint32 retlen = 0, keys_visited;
+			obj_print_xpath_with_keys(obj, NULL, &retlen, (!obj_is_key(obj)) ? keycount : (keycount - 1), &keys_visited);
+			buff = (xmlChar *)m__getMem(retlen + 1);
+			if (!buff) {
+				return ERR_INTERNAL_MEM;
+			}
+			obj_print_xpath_with_keys(obj, buff, &retlen, (!obj_is_key(obj)) ? keycount : (keycount - 1), &keys_visited);
+    		ses_putstr(scb, buff);
+    		m__free(buff);
+    		ses_putstr(scb, (const xmlChar*)"\"");
+    		if (!keycount)
+    		{
+    			ses_putstr(scb, (const xmlChar*)");");
+    		}
+    		else
+    		{
+    			if (obj_is_key(obj))
+				{
+					if (keycount - 1) {
+						ses_putchar(scb, ',');
+						write_c_key_values(scb, obj->parent->parent, objnameQ, keycount - 1, indent + indent);
+					}
+				}
+    			else
+    			{
+    				ses_putchar(scb, ',');
+    				write_c_key_values(scb, obj, objnameQ, keycount, indent + indent);
+    			}
+    			ses_putstr(scb, (const xmlChar*)");");
+    		}
+    	}
+
         ses_putstr_indent(scb, 
                           (const xmlChar *)"/* set the ", 
                           indent);
@@ -1352,25 +1503,113 @@ static void
             ses_putstr(scb, 
                        (const xmlChar *)"replace (void) or use "
                        "default value */");
-            ses_putstr_indent(scb, 
-                              (const xmlChar *)"(void)",
-                              indent);
-            write_c_safe_str(scb, obj_get_name(obj));
-            ses_putchar(scb, ';');
-            ses_putstr_indent(scb, 
-                              (const xmlChar *)"res = val_set_simval_obj(",
-                              indent);
-            ses_putstr_indent(scb, 
-                              (const xmlChar *)"dstval,",
-                              indent+indent);
-            ses_putstr_indent(scb, 
-                              (const xmlChar *)"dstval->obj,",
-                              indent+indent);
-            ses_indent(scb, indent+indent);
-            ses_putstr(scb, (const xmlChar *)"(const xmlChar *)\"");
-            ses_putstr(scb, defval);
-            ses_putstr(scb, (const xmlChar *)"\");");
-        } else if (typ_is_string(btyp) || 
+            if (cp->isdvm == false)
+            {
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"(void)",
+								  indent);
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putchar(scb, ';');
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"res = val_set_simval_obj(",
+								  indent);
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"dstval,",
+								  indent+indent);
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"dstval->obj,",
+								  indent+indent);
+				ses_indent(scb, indent+indent);
+				ses_putstr(scb, (const xmlChar *)"(const xmlChar *)\"");
+				ses_putstr(scb, defval);
+				ses_putstr(scb, (const xmlChar *)"\");");
+            }
+            else
+            {
+				ses_indent(scb, indent);
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putstr(scb, " = get_value_from_xpath(xpathexpr);");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"res = val_set_simval_obj(",
+								  indent);
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"dstval,",
+								  indent+indent);
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"dstval->obj,",
+								  indent+indent);
+				ses_indent(scb, indent+indent);
+				ses_putstr(scb, (const xmlChar *)"(");
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putstr(scb, (const xmlChar *)") != NULL ? ");
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putstr(scb, (const xmlChar *)" : (const xmlChar *)\"");
+				ses_putstr(scb, defval);
+				ses_putstr(scb, (const xmlChar *)"\");");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"\nif (",
+								  indent);
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putstr(scb, (const xmlChar *)" != NULL)");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"{",
+								  indent);
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"free(",
+								  indent + indent);
+				write_c_safe_str(scb, obj_get_name(obj));
+				ses_putstr(scb, (const xmlChar *)");");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"}",
+								  indent);
+            }
+        } else if (obj_is_key(obj) && cp->isdvm)
+        {
+        	ses_putstr(scb,
+					   (const xmlChar *)"fill in the list with dynamically allocated values here */");
+        	ses_putstr_indent(scb,
+        			(const xmlChar *)"res = get_list_from_xpath(xpathexpr, list_key_entries, num_of_keys);",
+        			indent);
+        }
+        else if (cp->isdvm)
+        {
+        	ses_putstr(scb, (const xmlChar *)"*/");
+        	ses_indent(scb, indent);
+			write_c_safe_str(scb, obj_get_name(obj));
+			ses_putstr(scb, " = get_value_from_xpath(xpathexpr);");
+
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"\nif (",
+							  indent);
+			write_c_safe_str(scb, obj_get_name(obj));
+			ses_putstr(scb, (const xmlChar *)" != NULL)");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"{",
+							  indent);
+
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"res = val_set_simval_obj(",
+							  indent + indent);
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"dstval,",
+							  indent+indent + indent + indent);
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"dstval->obj,",
+							  indent+indent + indent + indent);
+			ses_indent(scb, indent+indent + indent + indent);
+			write_c_safe_str(scb, obj_get_name(obj));
+			ses_putstr(scb, (const xmlChar *)");");
+
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"free(",
+							  indent + indent);
+			write_c_safe_str(scb, obj_get_name(obj));
+			ses_putstr(scb, (const xmlChar *)");");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"}",
+							  indent);
+        }
+        else if (typ_is_string(btyp) ||
                    btyp == NCX_BT_IDREF ||
                    btyp == NCX_BT_INSTANCE_ID ||
                    btyp == NCX_BT_UNION ||
@@ -1472,10 +1711,29 @@ static void
         ses_putstr_indent(scb, (const xmlChar *)"res = u_", indent);
         ses_putstr(scb, cdef->idstr);
         ses_putstr(scb, GET_SUFFIX);
+        if (cp->isdvm)
+        {
+    		if (obj_is_key(obj))
+    		{
+    			ses_putstr(scb, "_keys");
+    		}
+        }
         ses_putstr(scb, (const xmlChar *)"(dstval");
-        if (keycount) {
-            ses_putchar(scb, ',');
-            write_c_key_values(scb, obj, objnameQ, keycount, indent+indent);
+        if (cp->isdvm && obj_is_key(obj))
+        {
+			if (keycount - 1) {
+				ses_putchar(scb, ',');
+				write_c_key_values(scb, obj->parent->parent, objnameQ, keycount + 1, indent+indent);
+			}
+			ses_putstr_indent(scb, (const xmlChar *)"list_key_entries,", indent + indent);
+			ses_putstr_indent(scb, (const xmlChar *)"num_of_keys", indent + indent);
+        }
+        else
+        {
+        	if (keycount) {
+				ses_putchar(scb, ',');
+				write_c_key_values(scb, obj, objnameQ, keycount, indent+indent);
+			}
         }
         ses_putchar(scb, ')');
         ses_putchar(scb, ';');
@@ -1496,6 +1754,13 @@ static void
     }
     ses_putstr(scb, cdef->idstr);
     ses_putstr(scb, GET_SUFFIX);
+    if (cp->isdvm)
+    {
+		if (obj_is_key(obj))
+		{
+			ses_putstr(scb, "_keys");
+		}
+    }
     ses_putstr(scb, (const xmlChar *)" */\n");
 
 } /* write_c_get_cbfn */
@@ -1528,10 +1793,11 @@ static void
     c_define_t      *cdef, *childcdef;
     obj_template_t  *childobj;
     int32            indent;
-    boolean          child_done;
+    boolean          child_done, has_list_child;
 
     modname = ncx_get_modname(mod);
     indent = cp->indent;
+    has_list_child = obj_has_list_child(obj);
 
     cdef = find_path_cdefine(objnameQ, obj);
     if (cdef == NULL) {
@@ -1543,7 +1809,15 @@ static void
     if (fullmode) {
         ses_putstr(scb, FN_BANNER_START);
         ses_putstr(scb, cdef->idstr);
-        ses_putstr(scb, MRO_SUFFIX);
+        if (cp->isdvm && has_list_child)
+        {
+        	ses_putstr(scb, (const xmlChar *)"_getcb");
+        }
+        else
+        {
+        	ses_putstr(scb, MRO_SUFFIX);
+        }
+
         ses_putstr(scb, FN_BANNER_LN);
         ses_putstr(scb, FN_BANNER_LN);
         ses_putstr(scb, (const xmlChar *)"Make read-only child nodes");
@@ -1562,8 +1836,28 @@ static void
         /* generate the function prototype lines */
         ses_putstr(scb, (const xmlChar *)"\nstatic status_t");
         ses_putstr_indent(scb, cdef->idstr, indent);
-        ses_putstr(scb, MRO_SUFFIX);
-        ses_putstr(scb, (const xmlChar *)" (val_value_t *parentval)");
+        if (cp->isdvm && has_list_child)
+        {
+        	ses_putstr(scb, (const xmlChar *)"_getcb (");
+        	ses_putstr_indent(scb,
+        						(const xmlChar *)"ses_cb_t *scb,",
+								indent + indent);
+        	ses_putstr_indent(scb,
+        						(const xmlChar *)"getcb_mode_t cbmode,",
+								indent + indent);
+        	ses_putstr_indent(scb,
+        						(const xmlChar *)"const val_value_t *virval,",
+								indent + indent);
+        	ses_putstr_indent(scb,
+        						(const xmlChar *)"val_value_t *parentval)",
+								indent + indent);
+
+        }
+        else
+        {
+			ses_putstr(scb, MRO_SUFFIX);
+			ses_putstr(scb, (const xmlChar *)" (val_value_t *parentval)");
+        }
         ses_putstr(scb, (const xmlChar *)"\n{");
 
         /* generate static vars */
@@ -1649,8 +1943,76 @@ static void
 
             break;
         case OBJ_TYP_LIST:
+        	if (cp->isdvm)
+        	{
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"\nxmlChar *",
+								  indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_entries[MAX_NUM_OF_LIST_KEYS];");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"int ",
+								  indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_num_of_keys;");
 
-            break;
+				c_define_t      *key_cdef;
+				obj_key_t *obj_key = obj_first_key(childobj);
+				key_cdef = find_path_cdefine(objnameQ, obj_key->keyobj);
+				if (key_cdef == NULL) {
+					SET_ERROR(ERR_NCX_DEF_NOT_FOUND);
+					return;
+				}
+
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"\nres = ",
+								  indent);
+				ses_putstr(scb, key_cdef->idstr);
+				ses_putstr(scb, (const xmlChar *)"_get_keys(");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"parentval,",
+								  indent + indent + indent);
+				ses_indent(scb, indent + indent + indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_entries,");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"&",
+								  indent + indent + indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_num_of_keys);\n");
+
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"for (int i=0; i < ",
+								  indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_num_of_keys; ++i)");
+
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"{",
+								  indent);
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"res = ",
+								  indent + indent);
+				ses_putstr(scb, childcdef->idstr);
+				ses_putstr(scb, (const xmlChar *)"_add_list_entry(");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"parentval,",
+								  indent + indent + indent + indent);
+				ses_indent(scb, indent + indent + indent + indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_entries[i]);");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"free(",
+								  indent + indent);
+				write_c_safe_str(scb, obj_get_name(childobj));
+				ses_putstr(scb, (const xmlChar *)"_entries[i]);");
+				ses_putstr_indent(scb,
+								  (const xmlChar *)"}",
+								  indent);
+
+				child_done = TRUE;
+        	}
+        	break;
         case OBJ_TYP_CONTAINER:
             /* make the container */
             ses_putstr_indent(scb, (const xmlChar *)"res = ", indent);
@@ -1669,13 +2031,23 @@ static void
             write_if_res(scb, cp, indent);
             ses_putchar(scb, '\n');
 
-            /* any config=false container gets an MRO function */
-            ses_putstr_indent(scb, (const xmlChar *)"res = ", indent);
-            ses_putstr(scb, childcdef->idstr);
-            ses_putstr(scb, MRO_SUFFIX);
-            ses_putstr(scb, (const xmlChar *)"(childval);");
-            write_if_res(scb, cp, indent);
-            ses_putchar(scb, '\n');
+            if (cp->isdvm && obj_has_list_child(childobj))
+            {
+            	ses_putstr_indent(scb, (const xmlChar *)"childval->getcb = ", indent);
+            	ses_putstr(scb, childcdef->idstr);
+            	ses_putstr(scb, (const xmlChar *)"_getcb;");
+            }
+            else
+            {
+				/* any config=false container gets an MRO function */
+				ses_putstr_indent(scb, (const xmlChar *)"res = ", indent);
+				ses_putstr(scb, childcdef->idstr);
+				ses_putstr(scb, MRO_SUFFIX);
+				ses_putstr(scb, (const xmlChar *)"(childval);");
+				write_if_res(scb, cp, indent);
+				ses_putchar(scb, '\n');
+            }
+
             child_done = TRUE;
             break;
         case OBJ_TYP_ANYXML:
@@ -1710,7 +2082,14 @@ static void
         /* end the function */
         ses_putstr(scb, (const xmlChar *)"\n\n} /* ");
         ses_putstr(scb, cdef->idstr);
-        ses_putstr(scb, MRO_SUFFIX);
+        if (cp->isdvm && has_list_child)
+        {
+        	ses_putstr(scb, (const xmlChar *)"_getcb");
+        }
+        else
+        {
+        	ses_putstr(scb, MRO_SUFFIX);
+        }
         ses_putstr(scb, (const xmlChar *)" */");
         if (dlq_empty(&obj->iffeatureQ)) {
             ses_putchar(scb, '\n');
@@ -1935,7 +2314,15 @@ static void
                 ; // do nothing
             } else if (obj_is_np_container(obj) && !obj_is_top(obj)) {
                 write_c_mro_fn(scb, mod, cp, obj, TRUE, objnameQ);
-            } else {
+            }
+            else if (obj->objtype == OBJ_TYP_LIST)
+            {
+            	if (cp->isdvm)
+            	{
+					write_c_add_list_entry_fn(scb, mod, cp, obj, TRUE, objnameQ);
+            	}
+            }
+            else {
                 log_warn("\nWarning: no get-CB generated "
                          "for top-level operational "
                          "%s '%s'",
@@ -3415,6 +3802,18 @@ static status_t
         /* file header, meta-data, static data decls */
         write_c_header(scb, mod, cp);
         write_c_includes(scb, mod, cp);
+        if (cp->isdvm)
+		{
+			if (cp->format == NCX_CVTTYP_UC)
+			{
+				ses_putstr(scb, (const xmlChar*)"\n#define XPATH_MAX_LENGTH 2048\n");
+			}
+			else if (cp->format == NCX_CVTTYP_YC)
+			{
+				ses_putstr(scb, (const xmlChar*)"\n#define MAX_NUM_OF_LIST_KEYS 2048\n");
+			}
+		}
+
         write_c_static_vars(scb, mod, cp);
         write_c_init_static_vars_fn(scb, mod, cp);
 
@@ -3559,6 +3958,400 @@ void
     }
 
 }   /* c_write_fn_prototypes */
+
+/********************************************************************
+* FUNCTION write_c_add_list_entry_fn
+*
+* Generate the C code for the foo_object_add_list_entry function
+* Make read-only children
+*
+* INPUTS:
+*   scb == session control block to use for writing
+*   mod == module in progress
+*   cp == conversion parameters to use
+*   fullmode == TRUE for full function
+*               FALSE for just C statement guts
+*   obj == object struct for the database object
+*   objnameQ == Q of c_define_t structs to search for this object
+*********************************************************************/
+static void
+	write_c_add_list_entry_fn (ses_cb_t *scb,
+                    ncx_module_t *mod,
+                    const yangdump_cvtparms_t *cp,
+                    obj_template_t *obj,
+                    boolean fullmode,
+                    dlq_hdr_t *objnameQ)
+{
+    const xmlChar   *modname;
+    c_define_t      *cdef, *childcdef, *key_cdef;
+    obj_template_t  *childobj;
+    int32            indent;
+    boolean          child_done, has_list_child;
+    obj_key_t *list_key = obj_first_key(obj);
+
+    modname = ncx_get_modname(mod);
+    indent = cp->indent;
+    has_list_child = obj_has_list_child(obj);
+
+    cdef = find_path_cdefine(objnameQ, obj);
+    if (cdef == NULL) {
+        SET_ERROR(ERR_NCX_DEF_NOT_FOUND);
+        return;
+    }
+    key_cdef = find_path_cdefine(objnameQ, list_key->keyobj);
+	if (key_cdef == NULL) {
+		SET_ERROR(ERR_NCX_DEF_NOT_FOUND);
+		return;
+	}
+
+    /* generate function banner comment */
+    if (fullmode) {
+        ses_putstr(scb, FN_BANNER_START);
+        ses_putstr(scb, cdef->idstr);
+        ses_putstr(scb, (const xmlChar *)"_add_list_entry");
+
+        ses_putstr(scb, FN_BANNER_LN);
+        ses_putstr(scb, FN_BANNER_LN);
+        ses_putstr(scb, (const xmlChar *)"Make read-only list");
+        ses_putstr(scb, FN_BANNER_LN);
+        ses_putstr(scb, (const xmlChar *)"Path: ");
+        ses_putstr(scb, cdef->valstr);
+        ses_putstr(scb, FN_BANNER_LN);
+        ses_putstr(scb, FN_BANNER_INPUT);
+        ses_putstr(scb,
+                   (const xmlChar *)"    parentval == the parent struct to "
+                   "use for new child nodes");
+        ses_putstr(scb, FN_BANNER_LN);
+        ses_putstr(scb, FN_BANNER_RETURN_STATUS);
+        ses_putstr(scb, FN_BANNER_END);
+
+        /* generate the function prototype lines */
+        ses_putstr(scb, (const xmlChar *)"\nstatic status_t");
+        ses_putstr_indent(scb, cdef->idstr, indent);
+        ses_putstr(scb, (const xmlChar *)"_add_list_entry (");
+		ses_putstr_indent(scb, (const xmlChar *)" val_value_t *parentval,", indent + indent);
+		ses_putstr_indent(scb, (const xmlChar *)" xmlChar* key_value)", indent + indent);
+        ses_putstr(scb, (const xmlChar *)"\n{");
+
+        /* generate static vars */
+        ses_putstr_indent(scb,
+                          (const xmlChar *)"status_t res = NO_ERR;",
+                          indent);
+        ses_putstr_indent(scb,
+                          (const xmlChar *)"val_value_t *childval = NULL;\n",
+                          indent);
+    }
+
+    /* print an enter fn DEBUG trace */
+    ses_putchar(scb, '\n');
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"if (LOGDEBUG) {",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"log_debug(\"\\nEnter ",
+                      indent+indent);
+    ses_putstr(scb, cdef->idstr);
+    ses_putstr(scb, (const xmlChar *)"_add_list_entry function\");");
+    ses_putstr_indent(scb, (const xmlChar *)"}", indent);
+
+
+    /* create list entry */
+    ses_putchar(scb, '\n');
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"/* add ",
+                      indent);
+    ses_putstr(scb, cdef->valstr);
+    ses_putstr(scb, (const xmlChar *)" list */");
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"childval = agt_make_list(",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"parentval->obj,",
+                      indent+indent);
+    ses_indent(scb, indent+indent);
+    write_identifier(scb, modname, BAR_NODE,
+                     obj_get_name(obj), cp->isuser);
+    ses_putchar(scb, ',');
+    ses_putstr_indent(scb, (const xmlChar *)"&res);", indent+indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"if (childval != NULL) {",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"val_add_child(childval, "
+                      "parentval);",
+                      indent+indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"} else {",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"return res;",
+                      indent+indent);
+
+    ses_indent(scb, indent);
+    ses_putchar(scb, '}');
+
+    ses_putstr_indent(scb,
+                          (const xmlChar *)"\n parentval = childval;",
+                          indent);
+
+    ses_putchar(scb, '\n');
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"/* add ",
+                      indent);
+    ses_putstr(scb, key_cdef->valstr);
+    ses_putstr(scb, (const xmlChar *)" key element to list*/");
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"childval = agt_make_leaf(",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"parentval->obj,",
+                      indent+indent);
+    ses_indent(scb, indent+indent);
+    write_identifier(scb, modname, BAR_NODE,
+                     obj_get_name(list_key->keyobj), cp->isuser);
+    ses_putchar(scb, ',');
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"key_value,",
+                      indent+indent);
+    ses_putstr_indent(scb, (const xmlChar *)"&res);", indent+indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"if (childval != NULL) {",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"val_add_child(childval, "
+                      "parentval);",
+                      indent+indent);
+    ses_putstr_indent(scb,
+                          (const xmlChar *)"val_gen_key_entry(childval);",
+                          indent+indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"} else {",
+                      indent);
+    ses_putstr_indent(scb,
+                      (const xmlChar *)"return res;",
+                      indent+indent);
+
+    ses_indent(scb, indent);
+    ses_putchar(scb, '}');
+
+    /* create read-only child nodes as needed */
+    for (childobj = obj_first_child(obj);
+         childobj != NULL;
+         childobj = obj_next_child(childobj)) {
+
+        if (!obj_has_name(childobj) ||
+            obj_is_cli(childobj) ||
+            obj_is_abstract(childobj) ||
+            obj_get_config_flag(childobj)) {
+            continue;
+        }
+
+        /* this is a real data node config = false */
+        childcdef = find_path_cdefine(objnameQ, childobj);
+        if (childcdef == NULL) {
+            SET_ERROR(ERR_NCX_DEF_NOT_FOUND);
+            return;
+        }
+
+        child_done = FALSE;
+
+        switch (childobj->objtype) {
+        case OBJ_TYP_LEAF:
+        	if (obj_is_key(childobj))
+        	{
+        		//we already added the key, no need to add it as a virtual leaf anymore
+        		child_done=TRUE;
+        		break;
+        	}
+            ses_putchar(scb, '\n');
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"/* add ",
+                              indent);
+            ses_putstr(scb, childcdef->valstr);
+            ses_putstr(scb, (const xmlChar *)" */");
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"childval = agt_make_"
+                              "virtual_leaf(",
+                              indent);
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"parentval->obj,",
+                              indent+indent);
+            ses_indent(scb, indent+indent);
+            write_identifier(scb, modname, BAR_NODE,
+                             obj_get_name(childobj), cp->isuser);
+            ses_putchar(scb, ',');
+            ses_indent(scb, indent+indent);
+            ses_putstr(scb, childcdef->idstr);
+            ses_putstr(scb, GET_SUFFIX);
+            ses_putchar(scb, ',');
+            ses_putstr_indent(scb, (const xmlChar *)"&res);", indent+indent);
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"if (childval != NULL) {",
+                              indent);
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"val_add_child(childval, "
+                              "parentval);",
+                              indent+indent);
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"} else {",
+                              indent);
+            ses_putstr_indent(scb,
+                              (const xmlChar *)"return res;",
+                              indent+indent);
+
+            ses_indent(scb, indent);
+            ses_putchar(scb, '}');
+            child_done = TRUE;
+            break;
+        case OBJ_TYP_LEAF_LIST:
+
+            break;
+        case OBJ_TYP_LIST:
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"\nxmlChar *",
+							  indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_entries[MAX_NUM_OF_LIST_KEYS];");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"int ",
+							  indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_num_of_keys;");
+
+			c_define_t      *key_cdef;
+			obj_key_t *obj_key = obj_first_key(childobj);
+			key_cdef = find_path_cdefine(objnameQ, obj_key->keyobj);
+			if (key_cdef == NULL) {
+				SET_ERROR(ERR_NCX_DEF_NOT_FOUND);
+				return;
+			}
+
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"\nres = ",
+							  indent);
+			ses_putstr(scb, key_cdef->idstr);
+			ses_putstr(scb, (const xmlChar *)"_get_keys(");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"parentval,",
+							  indent + indent + indent);
+			ses_indent(scb, indent + indent + indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_entries,");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"&",
+							  indent + indent + indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_num_of_keys);\n");
+
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"for (int i=0; i < ",
+							  indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_num_of_keys; ++i)");
+
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"{",
+							  indent);
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"res = ",
+							  indent + indent);
+			ses_putstr(scb, childcdef->idstr);
+			ses_putstr(scb, (const xmlChar *)"_add_list_entry(");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"parentval,",
+							  indent + indent + indent + indent);
+			ses_indent(scb, indent + indent + indent + indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_entries[i]);");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"free(",
+							  indent + indent);
+			write_c_safe_str(scb, obj_get_name(childobj));
+			ses_putstr(scb, (const xmlChar *)"_entries[i]);");
+			ses_putstr_indent(scb,
+							  (const xmlChar *)"}",
+							  indent);
+
+			child_done = TRUE;
+        	break;
+        case OBJ_TYP_CONTAINER:
+            /* make the container */
+            ses_putstr_indent(scb, (const xmlChar *)"res = ", indent);
+            ses_putstr(scb, (const xmlChar *)"agt_add_container(");
+            ses_indent(scb, indent+indent);
+            write_identifier(scb, modname, BAR_MOD, modname, cp->isuser);
+            ses_putchar(scb, ',');
+            ses_indent(scb, indent+indent);
+            write_identifier(scb, modname, BAR_NODE,
+                             obj_get_name(childobj), cp->isuser);
+            ses_putchar(scb, ',');
+            ses_putstr_indent(scb, (const xmlChar *)"parentval,",
+                              indent+indent);
+            ses_putstr_indent(scb, (const xmlChar *)"&childval);",
+                              indent+indent);
+            write_if_res(scb, cp, indent);
+            ses_putchar(scb, '\n');
+
+            if (obj_has_list_child(childobj))
+            {
+            	ses_putstr_indent(scb, (const xmlChar *)"childval->getcb = ", indent);
+            	ses_putstr(scb, childcdef->idstr);
+            	ses_putstr(scb, (const xmlChar *)"_getcb;");
+            }
+            else
+            {
+				/* any config=false container gets an MRO function */
+				ses_putstr_indent(scb, (const xmlChar *)"res = ", indent);
+				ses_putstr(scb, childcdef->idstr);
+				ses_putstr(scb, MRO_SUFFIX);
+				ses_putstr(scb, (const xmlChar *)"(childval);");
+				write_if_res(scb, cp, indent);
+				ses_putchar(scb, '\n');
+            }
+
+            child_done = TRUE;
+            break;
+        case OBJ_TYP_ANYXML:
+
+            break;
+        case OBJ_TYP_CHOICE:
+            child_done = TRUE;  // nothing to do
+            break;
+        case OBJ_TYP_CASE:
+            child_done = TRUE;  // nothing to do
+            break;
+        default:
+            SET_ERROR(ERR_INTERNAL_VAL);
+        }
+
+        if (!child_done) {
+            /* treat as not-handled flag!!! */
+            ses_putstr_indent(scb, (const xmlChar *)"/* ", indent);
+            ses_putstr(scb, obj_get_typestr(obj));
+            ses_putchar(scb, ' ');
+            ses_putstr(scb, obj_get_name(obj));
+            ses_putstr(scb, (const xmlChar *)" not handled!!! */");
+        }
+    }
+
+    if (fullmode) {
+        /* return result */
+        ses_putchar(scb, '\n');
+        ses_indent(scb, indent);
+        ses_putstr(scb, (const xmlChar *)"return res;");
+
+        /* end the function */
+        ses_putstr(scb, (const xmlChar *)"\n\n} /* ");
+        ses_putstr(scb, cdef->idstr);
+        ses_putstr(scb, (const xmlChar *)"_add_list_entry");
+        ses_putstr(scb, (const xmlChar *)" */");
+        if (dlq_empty(&obj->iffeatureQ)) {
+            ses_putchar(scb, '\n');
+        }
+    }
+
+} /* write_c_add_list_entry_fn */
+
 
 
 /* END file c.c */
