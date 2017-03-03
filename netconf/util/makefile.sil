@@ -32,9 +32,10 @@ REAL_INST=$(DESTDIR)$(PREFIX)/lib/yuma
 REAL_BASE=$(DESTDIR)$(PREFIX)/lib
 endif
 
-BASE_NAME=Default_values_mediator_utils
+ifdef DVM
+BASE_NAME=mediator_utils
 BASE_COMMON=../../$(BASE_NAME)
-
+endif
 #################### MAKE RULES ########################
 
 all: sil_dummy sil_lib
@@ -255,15 +256,12 @@ superclean:
 	rm -f *~  $(DEPS) dependencies $(OBJS) \
 	$(LIB_INST)/lib$(SUBDIR_NM).*
 
-ifndef MAC
+ifdef DVM
 $(LIB_INST)/lib$(SUBDIR_NM).so: $(OBJS)
 	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS) -L$(BASE_COMMON)/lib -l$(BASE_NAME)
 else
 $(LIB_INST)/lib$(SUBDIR_NM).so: $(OBJS)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -bundle -std=gnu99 \
-	-current_version 1.0 \
-	-undefined dynamic_lookup \
-	-o $@ -install_name lib$(SUBDIR_NM).so $(OBJS)
+	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS)
 endif
 
 code:

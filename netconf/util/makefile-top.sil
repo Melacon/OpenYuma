@@ -10,8 +10,9 @@
 
 # make all targets
 DIRS = src
-BASE_MEDIATOR_DIR = ../Default_values_mediator_utils
-
+ifdef DVM
+MEDIATOR_UTILS_DIR = ../mediator_utils
+endif
 #################### PLATFORM DEFINITIONS ############
 
 all: silall
@@ -26,14 +27,19 @@ superclean: silsuperclean
 install: silinstall
 
 silall: silclean
-	cd $(BASE_MEDIATOR_DIR); $(MAKE);
-	
+ifdef DVM
+	cd $(MEDIATOR_UTILS_DIR); $(MAKE);
+endif	
+
 	for dir in $(DIRS); do\
 	  cd $$dir && $(MAKE) && cd ..;\
         done
 
 silclean:
-	cd $(BASE_MEDIATOR_DIR); $(MAKE) clean;
+ifdef DVM
+	cd $(MEDIATOR_UTILS_DIR); $(MAKE) clean;
+endif
+
 	for dir in $(DIRS); do\
 	  cd $$dir && $(MAKE) clean && cd ..;\
         done

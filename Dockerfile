@@ -4,6 +4,11 @@ FROM ubuntu:14.04
 ENV DEBIAN_FRONTEND noninteractive
 RUN ["apt-get", "update"]
 RUN ["apt-get", "install", "-y", "git", "autoconf", "gcc", "libtool", "libxml2-dev", "libssl-dev", "make", "libncurses5-dev", "libssh2-1-dev", "openssh-server"]
+#RUN ["apt-get", "-y", "install", "python-software-properties"]
+#RUN ["apt-get", "-y", "install", "software-properties-common"]
+#RUN ["add-apt-repository" "ppa:chris-lea/node.js"]
+#RUN ["apt-get", "update"]
+#RUN ["apt-get", "install", "-y", "iperf3"]
 
 # setup admin user that openyuma will use
 RUN set -x -e; \
@@ -15,13 +20,29 @@ RUN set -x -e; \
 COPY . /usr/src/OpenYuma
 WORKDIR /usr/src/OpenYuma
 RUN set -x -e; \
+	make clean; \
     make; \
-    sudo make install; \
-    touch /tmp/startup-cfg.xml; \
+    sudo make install
+WORKDIR /usr/src/OpenYuma/example-modules/core-model
+RUN set -x -e; \
+    make DVM=1; \
+    sudo make install
+WORKDIR /usr/src/OpenYuma/example-modules/microwave-model
+RUN set -x -e; \
+    make DVM=1; \
+    sudo make install
+
+WORKDIR /usr/src/OpenYuma
+RUN set -x -e; \
     printf 'Port 830\nSubsystem netconf "/usr/sbin/netconf-subsystem --ncxserver-sockname=830@/tmp/ncxserver.sock"\n' >> /etc/ssh/sshd_config; \
-    printf '#!/bin/bash\nset -e -x\n/usr/sbin/netconfd --startup=/tmp/startup-cfg.xml --superuser=admin &\nsleep 1\n/usr/sbin/sshd -D &\nwait\nkill %%\n' > /root/start.sh; \
+    #printf '#!/bin/bash\nset -e -x\n/usr/sbin/netconfd --startup=/tmp/startup-cfg.xml --superuser=admin &\nsleep 1\n/usr/sbin/sshd -D &\nwait\nkill %%\n' > /root/start.sh; \
+    printf '#!/bin/bash\nset -e -x\n/usr/sbin/netconfd --with-startup=true --startup=/usr/src/OpenYuma/startup-cfg.xml --target=running --superuser=admin --module=microwave-model --module=core-model&\nsleep 1\n/usr/sbin/sshd -D &\nwait\nkill %%\n' > /root/start.sh; \
+    #printf '#!/bin/bash\nset -e -x\n/usr/sbin/netconfd --startup=/tmp/startup-cfg.xml --superuser=admin &\nsleep 1\n/usr/sbin/sshd -D &\n/bin/bash\n' > /root/start.sh; \
     chmod 0755 /root/start.sh
 CMD ["/root/start.sh"]
+
+
+#CMD ["/bin/bash"]
 
 # finishing touches
 EXPOSE 22

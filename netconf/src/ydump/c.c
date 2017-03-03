@@ -1499,7 +1499,7 @@ static void
         btyp = obj_get_basetype(obj);
         defval = obj_get_default(obj);
 
-        if (defval) {
+        if (defval && (!obj_is_key(obj) && cp->isdvm)) {
             ses_putstr(scb, 
                        (const xmlChar *)"replace (void) or use "
                        "default value */");
