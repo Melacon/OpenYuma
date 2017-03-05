@@ -90,6 +90,9 @@
  /usr/include/yuma/ncx/ncx.h /usr/include/yuma/ncx/ncx_feature.h \
  /usr/include/yuma/ncx/ncxmod.h /usr/include/yuma/ncx/cap.h \
  /usr/include/yuma/ncx/ncxtypes.h /usr/include/yuma/ncx/val_util.h \
- /usr/include/yuma/ncx/xml_util.h u_microwave-model.h y_microwave-model.h
+ /usr/include/yuma/ncx/xml_util.h u_microwave-model.h y_microwave-model.h \
+ ../../mediator_utils/include/utils.h /usr/include/yuma/ncx/obj.h \
+ /usr/include/libxml2/libxml/xpath.h \
+ /usr/include/libxml2/libxml/xpathInternals.h
 
 

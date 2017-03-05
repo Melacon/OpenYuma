@@ -404,6 +404,16 @@ static status_t
 		cp->isdvm = false;
 	}
 
+	/* notif parameter */
+	val = val_find_child(valset,
+						 YANGDUMP_MOD,
+						 YANGDUMP_PARM_NOTIF);
+	if (val && val->res == NO_ERR) {
+		cp->isnotif = (boolean)VAL_BOOL(val);
+	} else {
+		cp->isnotif = false;
+	}
+
     /* help parameter */
     val = val_find_child(valset, 
                          YANGDUMP_MOD, 

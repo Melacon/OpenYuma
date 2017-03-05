@@ -259,7 +259,7 @@ superclean:
 
 ifdef DVM
 $(LIB_INST)/lib$(SUBDIR_NM).so: $(OBJS)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS) -L$(BASE_COMMON)/lib -l$(BASE_NAME)
+	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS) -L$(BASE_COMMON)/lib -l$(BASE_NAME) -lpthread
 else
 $(LIB_INST)/lib$(SUBDIR_NM).so: $(OBJS)
 	$(LINK) $(CFLAGS) $(LDFLAGS) -shared -rdynamic -Wl,-soname,lib$(SUBDIR_NM).so -o $@ $(OBJS)

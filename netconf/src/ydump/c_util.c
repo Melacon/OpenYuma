@@ -1446,6 +1446,88 @@ void
 
 }  /* write_c_val_macro_type */
 
+/*******************************************************************
+* FUNCTION write_c_val_format_specifier_type
+*
+* Generate the C format specifier for printf according to the data type
+*
+* INPUTS:
+*   scb == session control block to use for writing
+*   obj == object template to check
+*
+**********************************************************************/
+void
+    write_c_val_format_specifier_type (ses_cb_t *scb,
+                            const obj_template_t *obj)
+{
+    ncx_btype_t    btyp;
+
+    btyp = obj_get_basetype(obj);
+
+    switch (btyp) {
+    case NCX_BT_BITS:
+        ses_putstr(scb, (const xmlChar *)"\"%s\"");
+        break;
+    case NCX_BT_BOOLEAN:
+        ses_putstr(scb, (const xmlChar *)"\"%s\"");
+        break;
+    case NCX_BT_INT8:
+        ses_putstr(scb, (const xmlChar *)"\"%d\"");
+        break;
+    case NCX_BT_INT16:
+        ses_putstr(scb, (const xmlChar *)"\"%d\"");
+        break;
+    case NCX_BT_INT32:
+        ses_putstr(scb, (const xmlChar *)"\"%d\"");
+        break;
+    case NCX_BT_INT64:
+        ses_putstr(scb, (const xmlChar *)"\"%ld\"");
+        break;
+    case NCX_BT_UINT8:
+        ses_putstr(scb, (const xmlChar *)"\"%u\"");
+        break;
+    case NCX_BT_UINT16:
+        ses_putstr(scb, (const xmlChar *)"\"%u\"");
+        break;
+    case NCX_BT_UINT32:
+        ses_putstr(scb, (const xmlChar *)"\"%u\"");
+        break;
+    case NCX_BT_UINT64:
+        ses_putstr(scb, (const xmlChar *)"\"%lu\"");
+        break;
+    case NCX_BT_DECIMAL64:
+        ses_putstr(scb, (const xmlChar *)"\"%Lf\"");
+        break;
+    case NCX_BT_FLOAT64:
+        ses_putstr(scb, (const xmlChar *)"\"%Lf\"");
+        break;
+    case NCX_BT_ENUM:
+        ses_putstr(scb, (const xmlChar *)"\"%s\"");
+        break;
+    case NCX_BT_STRING:
+        ses_putstr(scb, (const xmlChar *)"\"%s\"");
+        break;
+    case NCX_BT_UNION:
+        ses_putstr(scb, (const xmlChar *)"\"%s\"");
+        break;
+    case NCX_BT_BINARY:
+        ses_putstr(scb, (const xmlChar *)"\"%s\"");
+        break;
+    case NCX_BT_INSTANCE_ID:
+        ses_putstr(scb, (const xmlChar *)"\"s\"");
+        break;
+    case NCX_BT_LEAFREF:
+        ses_putstr(scb, (const xmlChar *)"\"s\"");
+        break;
+    case NCX_BT_IDREF:
+        ses_putstr(scb, (const xmlChar *)"\"s\"");
+        break;
+    default:
+        SET_ERROR(ERR_INTERNAL_VAL);
+    }
+
+}  /* write_c_val_format_specifier_type */
+
 
 /*******************************************************************
 * FUNCTION write_c_oid_comment

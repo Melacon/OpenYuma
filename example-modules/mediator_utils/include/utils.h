@@ -27,7 +27,7 @@
 ({													\
 	if ((condition))								\
 	{												\
-		fprintf(stderr, "Mediator: %s at %s line %d: "fmt"\n", __FILE__,__FUNCTION__,__LINE__, ##__VA_ARGS__); \
+		fprintf(stderr, "Mediator?: %s at %s line %d: "fmt"\n", __FILE__,__FUNCTION__,__LINE__, ##__VA_ARGS__); \
 		action;										\
 	} 												\
 })
