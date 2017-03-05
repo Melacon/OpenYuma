@@ -132,7 +132,7 @@
           <encryption-is-avail>false</encryption-is-avail>
           <supported-loop-back-kind-list />
           <maintenance-timer-range>Range of the maintenance timer not yet defined.</maintenance-timer-range>
-          <supported-alarms>Supported alarms not yet defined.</supported-alarms>
+          <supported-alarms>signalIsLost, rslIsExceeded, temperatureIsExceeded, modemIsFaulty, radioIsFaulty, modulationIsDownShifted</supported-alarms>
           <supported-channel-plan-list>
              <supported-channel-plan>plan_1</supported-channel-plan>
              <duplex-distance-is-variable>false</duplex-distance-is-variable>
@@ -296,4 +296,7 @@
           </historical-performance-data-list>
        </air-interface-historical-performances>
     </mw-air-interface-pac>
-    </status>
+    <notifications>
+    	<timeout>10</timeout>
+    </notifications>
+</status>

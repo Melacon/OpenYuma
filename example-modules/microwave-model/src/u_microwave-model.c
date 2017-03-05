@@ -41,12 +41,22 @@
 #include "u_microwave-model.h"
 #include "y_microwave-model.h"
 
+#include <time.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "utils.h"
+
 #define XPATH_MAX_LENGTH 2048
+#define MAX_NUM_OF_ALARMS 2048
 
 static obj_template_t *object_creation_notification_obj;
 static obj_template_t *object_deletion_notification_obj;
 static obj_template_t *attribute_value_changed_notification_obj;
 static obj_template_t *problem_notification_obj;
+static int32 attribute_value_changed_counter = 0;
+static int32 problem_counter = 0;
 
 /* put your static variables here */
 
@@ -75,6 +85,30 @@ status_t u_microwave_model_mw_air_interface_pac_layer_protocol_edit (
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer-protocol");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_layer_protocol_edit callback for %s phase",
@@ -94,8 +128,12 @@ status_t u_microwave_model_mw_air_interface_pac_layer_protocol_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1444,6 +1482,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_air_
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_air_interface_name_edit callback for %s phase",
@@ -1463,8 +1525,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_air_
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1509,6 +1575,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_radi
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "radio-signal-id");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_radio_signal_id_edit callback for %s phase",
@@ -1528,8 +1618,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_radi
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1574,6 +1668,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_f
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "tx-frequency");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_frequency_edit callback for %s phase",
@@ -1593,8 +1711,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_f
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1639,6 +1761,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_rx_f
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "rx-frequency");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_rx_frequency_edit callback for %s phase",
@@ -1658,8 +1804,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_rx_f
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1704,6 +1854,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_c
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "tx-channel-bandwidth");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_channel_bandwidth_edit callback for %s phase",
@@ -1723,8 +1897,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_c
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1769,6 +1947,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_rx_c
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "rx-channel-bandwidth");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_rx_channel_bandwidth_edit callback for %s phase",
@@ -1788,8 +1990,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_rx_c
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1834,6 +2040,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_pola
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "polarization");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_polarization_edit callback for %s phase",
@@ -1853,8 +2083,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_pola
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1899,6 +2133,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_powe
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "power-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_power_is_on_edit callback for %s phase",
@@ -1918,8 +2176,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_powe
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -1964,6 +2226,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tran
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "transmitter-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_transmitter_is_on_edit callback for %s phase",
@@ -1983,8 +2269,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tran
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2029,6 +2319,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_rece
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "receiver-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_receiver_is_on_edit callback for %s phase",
@@ -2048,8 +2362,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_rece
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2094,6 +2412,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_p
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "tx-power");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT8(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_power_edit callback for %s phase",
@@ -2113,8 +2455,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_tx_p
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2159,6 +2505,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_adap
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "adaptive-modulation-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_adaptive_modulation_is_on_edit callback for %s phase",
@@ -2178,8 +2548,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_adap
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2224,6 +2598,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "modulation-min");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_modulation_min_edit callback for %s phase",
@@ -2243,8 +2641,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2289,6 +2691,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "modulation-max");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_modulation_max_edit callback for %s phase",
@@ -2308,8 +2734,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2354,6 +2784,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_xpic
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "xpic-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_xpic_is_on_edit callback for %s phase",
@@ -2373,8 +2827,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_xpic
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2419,6 +2877,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_mimo
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mimo-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_mimo_is_on_edit callback for %s phase",
@@ -2438,8 +2920,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_mimo
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2484,6 +2970,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_alic
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "alic-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_alic_is_on_edit callback for %s phase",
@@ -2503,8 +3013,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_alic
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2549,6 +3063,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "atpc-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc_is_on_edit callback for %s phase",
@@ -2568,8 +3106,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2614,6 +3156,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "atpc-thresh-upper");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc_thresh_upper_edit callback for %s phase",
@@ -2633,8 +3199,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2679,6 +3249,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "atpc-thresh-lower");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc_thresh_lower_edit callback for %s phase",
@@ -2698,8 +3292,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_atpc
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2744,6 +3342,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_auto
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "auto-freq-select-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_auto_freq_select_is_on_edit callback for %s phase",
@@ -2763,8 +3385,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_auto
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2809,6 +3435,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_auto
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "auto-freq-select-range");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT8(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_auto_freq_select_range_edit callback for %s phase",
@@ -2828,8 +3478,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_auto
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2874,6 +3528,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "modulation-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_modulation_is_on_edit callback for %s phase",
@@ -2893,8 +3571,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -2939,6 +3621,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_encr
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "encryption-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_encryption_is_on_edit callback for %s phase",
@@ -2958,8 +3664,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_encr
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3004,6 +3714,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_cryp
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "cryptographic-key");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_cryptographic_key_edit callback for %s phase",
@@ -3023,8 +3757,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_cryp
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3069,6 +3807,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_loop
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "loop-back-kind-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_loop_back_kind_on_edit callback for %s phase",
@@ -3088,8 +3850,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_loop
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3134,6 +3900,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_main
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "maintenance-timer");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_maintenance_timer_edit callback for %s phase",
@@ -3153,8 +3943,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_main
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3200,6 +3994,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_prob
     const xmlChar *k_mw_air_interface_pac_air_interface_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_problem_kind_severity_list_problem_kind_name_edit callback for %s phase",
@@ -3219,8 +4037,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_prob
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3266,6 +4088,30 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_prob
     const xmlChar *k_mw_air_interface_pac_air_interface_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_problem_kind_severity_list_problem_kind_severity_edit callback for %s phase",
@@ -3285,8 +4131,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_prob
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3332,6 +4182,29 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_prob
     const xmlChar *k_mw_air_interface_pac_air_interface_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_problem_kind_severity_list_edit callback for %s phase",
@@ -3351,8 +4224,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_prob
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -3397,6 +4274,29 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_edit
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-configuration");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_edit callback for %s phase",
@@ -3416,8 +4316,12 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_edit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -8912,6 +9816,29 @@ status_t u_microwave_model_mw_air_interface_pac_edit (
     const xmlChar *k_mw_air_interface_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-air-interface-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_edit callback for %s phase",
@@ -8931,8 +9858,12 @@ status_t u_microwave_model_mw_air_interface_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9292,6 +10223,30 @@ status_t u_microwave_model_mw_air_interface_hsb_end_point_pac_role_edit (
     const xmlChar *k_mw_air_interface_hsb_end_point_pac_endpoint)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "role");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_end_point_pac_endpoint);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_end_point_pac_role_edit callback for %s phase",
@@ -9311,8 +10266,12 @@ status_t u_microwave_model_mw_air_interface_hsb_end_point_pac_role_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9357,6 +10316,30 @@ status_t u_microwave_model_mw_air_interface_hsb_end_point_pac_endpoint_edit (
     const xmlChar *k_mw_air_interface_hsb_end_point_pac_endpoint)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "endpoint");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_end_point_pac_endpoint);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_end_point_pac_endpoint_edit callback for %s phase",
@@ -9376,8 +10359,12 @@ status_t u_microwave_model_mw_air_interface_hsb_end_point_pac_endpoint_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9422,6 +10409,29 @@ status_t u_microwave_model_mw_air_interface_hsb_end_point_pac_edit (
     const xmlChar *k_mw_air_interface_hsb_end_point_pac_endpoint)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-air-interface-hsb-end-point-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_end_point_pac_endpoint);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_end_point_pac_edit callback for %s phase",
@@ -9441,8 +10451,12 @@ status_t u_microwave_model_mw_air_interface_hsb_end_point_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9487,6 +10501,30 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_prot_type_edit (
     const xmlChar *k_mw_air_interface_hsb_fc_switch_pac_fcswitch)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "prot-type");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_fc_switch_pac_fcswitch);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_fc_switch_pac_prot_type_edit callback for %s phase",
@@ -9506,8 +10544,12 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_prot_type_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9552,6 +10594,30 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_
     const xmlChar *k_mw_air_interface_hsb_fc_switch_pac_fcswitch)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-hsb-configuration-is-faulty-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_fc_switch_pac_fcswitch);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_configuration_is_faulty_severity_edit callback for %s phase",
@@ -9571,8 +10637,12 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9617,6 +10687,30 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_
     const xmlChar *k_mw_air_interface_hsb_fc_switch_pac_fcswitch)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-hsb-is-partly-down-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_fc_switch_pac_fcswitch);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_is_partly_down_severity_edit callback for %s phase",
@@ -9636,8 +10730,12 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9682,6 +10780,30 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_
     const xmlChar *k_mw_air_interface_hsb_fc_switch_pac_fcswitch)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-hsb-is-down-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_fc_switch_pac_fcswitch);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_is_down_severity_edit callback for %s phase",
@@ -9701,8 +10823,12 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_air_interface_hsb_
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9747,6 +10873,30 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_fcswitch_edit (
     const xmlChar *k_mw_air_interface_hsb_fc_switch_pac_fcswitch)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "fcswitch");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_fc_switch_pac_fcswitch);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_fc_switch_pac_fcswitch_edit callback for %s phase",
@@ -9766,8 +10916,12 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_fcswitch_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9812,6 +10966,29 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_edit (
     const xmlChar *k_mw_air_interface_hsb_fc_switch_pac_fcswitch)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-air-interface-hsb-fc-switch-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_hsb_fc_switch_pac_fcswitch);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_hsb_fc_switch_pac_edit callback for %s phase",
@@ -9831,8 +11008,12 @@ status_t u_microwave_model_mw_air_interface_hsb_fc_switch_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9877,6 +11058,30 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_layer_protocol_edit (
     const xmlChar *k_mw_air_interface_diversity_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer-protocol");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_layer_protocol_edit callback for %s phase",
@@ -9896,8 +11101,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_layer_protocol_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10156,6 +11365,29 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
     const xmlChar *k_mw_air_interface_diversity_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-diversity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversity_configuration_air_interface_diversity_edit callback for %s phase",
@@ -10175,8 +11407,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10221,6 +11457,30 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
     const xmlChar *k_mw_air_interface_diversity_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-ltp-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversity_configuration_air_interface_ltp_list_edit callback for %s phase",
@@ -10240,8 +11500,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10287,6 +11551,30 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
     const xmlChar *k_mw_air_interface_diversity_pac_air_interface_diversity_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversity_configuration_problem_kind_severity_list_problem_kind_name_edit callback for %s phase",
@@ -10306,8 +11594,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10353,6 +11645,30 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
     const xmlChar *k_mw_air_interface_diversity_pac_air_interface_diversity_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversity_configuration_problem_kind_severity_list_problem_kind_severity_edit callback for %s phase",
@@ -10372,8 +11688,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10419,6 +11739,29 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
     const xmlChar *k_mw_air_interface_diversity_pac_air_interface_diversity_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversity_configuration_problem_kind_severity_list_edit callback for %s phase",
@@ -10438,8 +11781,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10484,6 +11831,29 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
     const xmlChar *k_mw_air_interface_diversity_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-diversity-configuration");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversity_configuration_edit callback for %s phase",
@@ -10503,8 +11873,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_air_interface_diversit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -11755,6 +13129,29 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_edit (
     const xmlChar *k_mw_air_interface_diversity_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-air-interface-diversity-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_air_interface_diversity_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_diversity_pac_edit callback for %s phase",
@@ -11774,8 +13171,12 @@ status_t u_microwave_model_mw_air_interface_diversity_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -11822,6 +13223,30 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_layer_protocol_edit (
     const xmlChar *k_mw_pure_ethernet_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer-protocol");
+    sprintf(obj_id_ref, "%s",
+        k_mw_pure_ethernet_structure_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_pure_ethernet_structure_pac_layer_protocol_edit callback for %s phase",
@@ -11841,8 +13266,12 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_layer_protocol_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -11976,6 +13405,30 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
     const xmlChar *k_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_pure_ethernet_structure_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_problem_kind_severity_list_problem_kind_name_edit callback for %s phase",
@@ -11995,8 +13448,12 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -12042,6 +13499,30 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
     const xmlChar *k_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_pure_ethernet_structure_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_problem_kind_severity_list_problem_kind_severity_edit callback for %s phase",
@@ -12061,8 +13542,12 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -12108,6 +13593,29 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
     const xmlChar *k_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_pure_ethernet_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_problem_kind_severity_list_edit callback for %s phase",
@@ -12127,8 +13635,12 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -12173,6 +13685,29 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
     const xmlChar *k_mw_pure_ethernet_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "pure-ethernet-structure-configuration");
+    sprintf(obj_id_ref, "%s",
+        k_mw_pure_ethernet_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structure_configuration_edit callback for %s phase",
@@ -12192,8 +13727,12 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_pure_ethernet_structur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -13391,6 +14930,29 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_edit (
     const xmlChar *k_mw_pure_ethernet_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-pure-ethernet-structure-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_pure_ethernet_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_pure_ethernet_structure_pac_edit callback for %s phase",
@@ -13410,8 +14972,12 @@ status_t u_microwave_model_mw_pure_ethernet_structure_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -13458,6 +15024,30 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_layer_protocol_edit (
     const xmlChar *k_mw_hybrid_mw_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer-protocol");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_layer_protocol_edit callback for %s phase",
@@ -13477,8 +15067,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_layer_protocol_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -13871,6 +15465,29 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
     const xmlChar *k_mw_hybrid_mw_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "structure-type");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_structure_type_edit callback for %s phase",
@@ -13890,8 +15507,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -13936,6 +15557,30 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
     const xmlChar *k_mw_hybrid_mw_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "number-of-tdm-segments-to-be-reserved");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_number_of_tdm_segments_to_be_reserved_edit callback for %s phase",
@@ -13955,8 +15600,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -14002,6 +15651,30 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
     const xmlChar *k_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_problem_kind_severity_list_problem_kind_name_edit callback for %s phase",
@@ -14021,8 +15694,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -14068,6 +15745,30 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
     const xmlChar *k_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_problem_kind_severity_list_problem_kind_severity_edit callback for %s phase",
@@ -14087,8 +15788,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -14134,6 +15839,29 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
     const xmlChar *k_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_problem_kind_severity_list_edit callback for %s phase",
@@ -14153,8 +15881,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -14199,6 +15931,29 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
     const xmlChar *k_mw_hybrid_mw_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "hybrid-mw-structure-configuration");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_configuration_edit callback for %s phase",
@@ -14218,8 +15973,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_hybrid_mw_structure_config
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -15417,6 +17176,29 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_edit (
     const xmlChar *k_mw_hybrid_mw_structure_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-hybrid-mw-structure-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_hybrid_mw_structure_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_hybrid_mw_structure_pac_edit callback for %s phase",
@@ -15436,8 +17218,12 @@ status_t u_microwave_model_mw_hybrid_mw_structure_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -15482,6 +17268,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_layer_protocol_edit (
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer-protocol");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_layer_protocol_edit callback for %s phase",
@@ -15501,8 +17311,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_layer_protocol_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16031,6 +17845,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "container-id");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_container_id_edit callback for %s phase",
@@ -16050,8 +17888,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16098,6 +17940,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     int16 k_mw_ethernet_container_pac_ethernet_container_configuration_segments_id_list_segment_id_ref)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "structure-id-ref");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_segments_id_list_structure_id_ref_edit callback for %s phase",
@@ -16117,8 +17983,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16165,6 +18035,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     int16 k_mw_ethernet_container_pac_ethernet_container_configuration_segments_id_list_segment_id_ref)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "segment-id-ref");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_segments_id_list_segment_id_ref_edit callback for %s phase",
@@ -16184,8 +18078,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16232,6 +18130,29 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     int16 k_mw_ethernet_container_pac_ethernet_container_configuration_segments_id_list_segment_id_ref)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "segments-id-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_segments_id_list_edit callback for %s phase",
@@ -16251,8 +18172,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16297,6 +18222,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "packet-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_packet_compression_is_on_edit callback for %s phase",
@@ -16316,8 +18265,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16362,6 +18315,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer2-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_layer2_compression_is_on_edit callback for %s phase",
@@ -16381,8 +18358,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16427,6 +18408,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "vlan-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_vlan_compression_is_on_edit callback for %s phase",
@@ -16446,8 +18451,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16492,6 +18501,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "q-in-q-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_q_in_q_compression_is_on_edit callback for %s phase",
@@ -16511,8 +18544,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16557,6 +18594,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mpls-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_mpls_compression_is_on_edit callback for %s phase",
@@ -16576,8 +18637,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16622,6 +18687,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "ipv4-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_ipv4_compression_is_on_edit callback for %s phase",
@@ -16641,8 +18730,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16687,6 +18780,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "ipv6-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_ipv6_compression_is_on_edit callback for %s phase",
@@ -16706,8 +18823,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16752,6 +18873,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer4-compression-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_layer4_compression_is_on_edit callback for %s phase",
@@ -16771,8 +18916,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16817,6 +18966,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "encryption-is-on");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", (VAL_BOOL(newval)) ? "true" : "false");
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_encryption_is_on_edit callback for %s phase",
@@ -16836,8 +19009,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16882,6 +19059,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "cryptographic-key");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_cryptographic_key_edit callback for %s phase",
@@ -16901,8 +19102,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -16948,6 +19153,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_ethernet_container_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_problem_kind_severity_list_problem_kind_name_edit callback for %s phase",
@@ -16967,8 +19196,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -17014,6 +19247,30 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_ethernet_container_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_problem_kind_severity_list_problem_kind_severity_edit callback for %s phase",
@@ -17033,8 +19290,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -17080,6 +19341,29 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_ethernet_container_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_problem_kind_severity_list_edit callback for %s phase",
@@ -17099,8 +19383,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -17145,6 +19433,29 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "ethernet-container-configuration");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_ethernet_container_configuration_edit callback for %s phase",
@@ -17164,8 +19475,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_ethernet_container_configur
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -18420,6 +20735,29 @@ status_t u_microwave_model_mw_ethernet_container_pac_edit (
     const xmlChar *k_mw_ethernet_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-ethernet-container-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_ethernet_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_ethernet_container_pac_edit callback for %s phase",
@@ -18439,8 +20777,12 @@ status_t u_microwave_model_mw_ethernet_container_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -18487,6 +20829,30 @@ status_t u_microwave_model_mw_tdm_container_pac_layer_protocol_edit (
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "layer-protocol");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_layer_protocol_edit callback for %s phase",
@@ -18506,8 +20872,12 @@ status_t u_microwave_model_mw_tdm_container_pac_layer_protocol_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -18678,6 +21048,30 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_cont
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "container-id");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_container_id_edit callback for %s phase",
@@ -18697,8 +21091,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_cont
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -18831,6 +21229,29 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_cont
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "container-type");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_container_type_edit callback for %s phase",
@@ -18850,8 +21271,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_cont
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -18896,6 +21321,30 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segm
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "structure-id-ref");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segment_id_structure_id_ref_edit callback for %s phase",
@@ -18915,8 +21364,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segm
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -18961,6 +21414,30 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segm
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "segment-id-ref");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
+    sprintf(new_value, "%d", VAL_INT16(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segment_id_segment_id_ref_edit callback for %s phase",
@@ -18980,8 +21457,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segm
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -19026,6 +21507,29 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segm
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "segment-id");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segment_id_edit callback for %s phase",
@@ -19045,8 +21549,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_segm
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -19092,6 +21600,30 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_prob
     const xmlChar *k_mw_tdm_container_pac_tdm_container_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-name");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_problem_kind_severity_list_problem_kind_name_edit callback for %s phase",
@@ -19111,8 +21643,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_prob
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -19158,6 +21694,30 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_prob
     const xmlChar *k_mw_tdm_container_pac_tdm_container_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_problem_kind_severity_list_problem_kind_severity_edit callback for %s phase",
@@ -19177,8 +21737,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_prob
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -19224,6 +21788,29 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_prob
     const xmlChar *k_mw_tdm_container_pac_tdm_container_configuration_problem_kind_severity_list_problem_kind_name)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "problem-kind-severity-list");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_problem_kind_severity_list_edit callback for %s phase",
@@ -19243,8 +21830,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_prob
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -19289,6 +21880,29 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_edit
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "tdm-container-configuration");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_edit callback for %s phase",
@@ -19308,8 +21922,12 @@ status_t u_microwave_model_mw_tdm_container_pac_tdm_container_configuration_edit
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -20563,6 +23181,29 @@ status_t u_microwave_model_mw_tdm_container_pac_edit (
     const xmlChar *k_mw_tdm_container_pac_layer_protocol)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "mw-tdm-container-pac");
+    sprintf(obj_id_ref, "%s",
+        k_mw_tdm_container_pac_layer_protocol);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_tdm_container_pac_edit callback for %s phase",
@@ -20582,8 +23223,12 @@ status_t u_microwave_model_mw_tdm_container_pac_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -21073,6 +23718,198 @@ status_t u_microwave_model_init (
     return res;
 } /* u_microwave_model_init */
 
+static long random_at_most(long max) {
+  unsigned long
+    // max <= RAND_MAX < ULONG_MAX, so this is okay.
+    num_bins = (unsigned long) max + 1,
+    num_rand = (unsigned long) RAND_MAX + 1,
+    bin_size = num_rand / num_bins,
+    defect   = num_rand % num_bins;
+
+  long x;
+  do {
+   x = random();
+  }
+  // This is carefully written not to overflow
+  while (num_rand - defect <= (unsigned long)x);
+
+  // Truncated division is intentional
+  return x/bin_size;
+}
+
+char* get_severity_for_problem(xmlChar* layer_protocol, xmlChar* problem_name)
+{
+	status_t res = NO_ERR;
+
+	cfg_template_t* runningcfg;
+	runningcfg = cfg_get_config_id(NCX_CFGID_RUNNING);
+	YUMA_ASSERT(!runningcfg || !runningcfg->root, return strdup("error"),
+			"No running config available");
+
+	val_value_t *current_child = val_find_child(runningcfg->root, y_microwave_model_M_microwave_model,
+			y_microwave_model_N_mw_air_interface_pac);
+
+	do
+	{
+		val_value_t *layer_protocol_child = val_find_child(current_child, y_microwave_model_M_microwave_model,
+				y_microwave_model_N_layer_protocol);
+
+		if (strcmp(VAL_STR(layer_protocol_child), layer_protocol) == 0)
+		{
+			val_value_t *air_interface_config_child = val_find_child(current_child,
+					y_microwave_model_M_microwave_model, y_microwave_model_N_air_interface_configuration);
+
+			YUMA_ASSERT(air_interface_config_child == NULL, return strdup("error"),
+					"Did not find an air_interface_config child for layer_protocol=%s!\n", layer_protocol);
+
+			val_value_t *problem_kind_severity_list_child = val_find_child(air_interface_config_child,
+							y_microwave_model_M_microwave_model, y_microwave_model_N_problem_kind_severity_list);
+			YUMA_ASSERT(problem_kind_severity_list_child == NULL, return strdup("error"),
+					"Did not find an problem_kind_severity_list_child child for layer_protocol=%s!\n", layer_protocol);
+			do
+			{
+				val_value_t *problem_kind_name_child = val_find_child(problem_kind_severity_list_child,
+									y_microwave_model_M_microwave_model, y_microwave_model_N_problem_kind_name);
+				YUMA_ASSERT(problem_kind_name_child == NULL, return strdup("error"),
+						"Did not find an problem_kind_name_child child for layer_protocol=%s!\n", layer_protocol);
+
+				if (strcmp(VAL_STR(problem_kind_name_child), problem_name) == 0)
+				{
+					val_value_t *problem_kind_severity_child = val_find_child(problem_kind_severity_list_child,
+										y_microwave_model_M_microwave_model, y_microwave_model_N_problem_kind_severity);
+					YUMA_ASSERT(problem_kind_severity_child == NULL, return strdup("error"),
+									"Did not find an problem_kind_severity_child child for layer_protocol=%s and problem_name=%s\n",
+									layer_protocol, VAL_STR(problem_kind_name_child));
+
+					return strdup(VAL_STR(problem_kind_severity_child));
+				}
+
+				problem_kind_severity_list_child = val_find_next_child(air_interface_config_child, y_microwave_model_M_microwave_model,
+						y_microwave_model_N_problem_kind_severity_list, problem_kind_severity_list_child);
+			}
+			while (problem_kind_severity_list_child != NULL);
+		}
+
+		current_child = val_find_next_child(runningcfg->root, y_microwave_model_M_microwave_model,
+				y_microwave_model_N_mw_air_interface_pac, current_child);
+	}
+	while (current_child != NULL);
+
+
+
+	return strdup("error");
+}
+
+static void generate_notifications()
+{
+	status_t res = NO_ERR;
+	xmlChar dateAndTime[256];
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	struct timeval tv;
+	int millisec;
+	long int freq = 0;
+
+	const xmlChar evalPath[XPATH_MAX_LENGTH];
+	sprintf(evalPath, "/notifications/timeout");
+
+	char *resultString = NULL;
+
+	resultString = get_value_from_xpath(evalPath);
+
+	if (resultString != NULL)
+	{
+		freq = strtol(resultString, NULL, 10);
+		free(resultString);
+	}
+
+	if (freq == 0)
+		return;
+
+	struct problemAlarms
+	{
+		xmlChar* problemName;
+		xmlChar* severity;
+		xmlChar* objIdRef;
+		bool 	cleared;
+	} alarms[MAX_NUM_OF_ALARMS];
+
+	xmlChar *layer_protocol_keys[MAX_NUM_OF_ALARMS];
+	int num_of_keys, num_of_alarms = 0;
+
+
+	sprintf(evalPath, "/mw-air-interface-pac/layer-protocol");
+	res = get_list_from_xpath(evalPath, layer_protocol_keys, &num_of_keys);
+
+	for (int i = 0; i<num_of_keys; ++i)
+	{
+		char *supported_alarms;
+		sprintf(evalPath, "/mw-air-interface-pac[layer-protocol=\"%s\"]/air-interface-capability/supported-alarms",
+			layer_protocol_keys[i]);
+
+		supported_alarms = get_value_from_xpath(evalPath);
+
+		YUMA_ASSERT(supported_alarms == NULL, continue, "Could not retrieve supported alarms");
+
+		char *alarm = NULL;
+		alarm = strtok (supported_alarms, ", ");
+
+		while (alarm != NULL)
+		{
+			alarms[num_of_alarms].problemName = strdup(alarm);
+			alarms[num_of_alarms].objIdRef = strdup(layer_protocol_keys[i]);
+			alarms[num_of_alarms].cleared = true;
+			fprintf(stderr, "problem_name=%s for layerProtocol=%s\n",
+					alarms[num_of_alarms].problemName, alarms[num_of_alarms].objIdRef);
+			num_of_alarms++;
+			alarm = strtok (NULL, " ,.-");
+		}
+	}
+
+	YUMA_ASSERT(num_of_alarms == 0, return, "Did not find any supported alarms for generating notifications");
+
+	while(TRUE)
+	{
+		gettimeofday(&tv, NULL);
+		millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+		if (millisec>=1000)
+		{ // Allow for rounding up to nearest second
+			millisec -=1000;
+			tv.tv_sec++;
+			millisec /= 100;
+		}
+		sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+		tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+		tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+
+		int ran = (int) random_at_most(num_of_alarms-1);
+
+		if (alarms[ran].cleared == true)
+		{
+			char* severity = get_severity_for_problem(alarms[ran].objIdRef, alarms[ran].problemName);
+
+			u_microwave_model_problem_notification_send(problem_counter++,
+					dateAndTime,
+					alarms[ran].objIdRef,
+					alarms[ran].problemName,
+					severity);
+			alarms[ran].cleared = false;
+			free(severity);
+		}
+		else
+		{
+			u_microwave_model_problem_notification_send(problem_counter++,
+					dateAndTime,
+					alarms[ran].objIdRef,
+					alarms[ran].problemName,
+					"non-alarmed");
+			alarms[ran].cleared = true;
+		}
+
+		sleep(freq);
+	}
+}
+
 /********************************************************************
 * FUNCTION u_microwave_model_init2
 * 
@@ -21085,6 +23922,13 @@ status_t u_microwave_model_init (
 status_t u_microwave_model_init2 (void)
 {
     status_t res = NO_ERR;
+
+    pthread_t gen_notif_thread;
+
+	if(pthread_create(&gen_notif_thread, NULL, generate_notifications, NULL))
+	{
+		return SET_ERROR(ERR_NCX_OPERATION_FAILED);
+	}
 
     /* put your init2 code here */
 

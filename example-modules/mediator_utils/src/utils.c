@@ -11,6 +11,7 @@
  * UTILS
  */
 static const char *filename =  "/usr/src/OpenYuma/microwave-model-status.xml";
+//static const char *filename =  "/home/emulator/workspace/OpenYuma/microwave-model-status.xml";
 
 static status_t
     get_object_string (const val_value_t *elem,
@@ -71,8 +72,10 @@ char* get_value_from_xpath(const xmlChar* xPathExpression)
 
 	for (int i = 0; i<size; ++i)
 	{
-		resultString = strdup(xmlNodeGetContent(xpathObj->nodesetval->nodeTab[i]));
-		YUMA_ASSERT(TRUE, NOP, "Got back xmlString=%s", xmlNodeGetContent(xpathObj->nodesetval->nodeTab[i]));
+		int length = strlen(xmlNodeGetContent(xpathObj->nodesetval->nodeTab[i]));
+		resultString = strndup(xmlNodeGetContent(xpathObj->nodesetval->nodeTab[i]), length);
+		YUMA_ASSERT(TRUE, NOP, "Got back xmlString=%s having length=%d",
+				xmlNodeGetContent(xpathObj->nodesetval->nodeTab[i]), length);
 	}
 
     xmlXPathFreeObject(xpathObj);

@@ -333,6 +333,16 @@ module yangdump {
           type boolean;
           default false;
         }
+        
+        leaf notif {
+          description 
+            "If 'true', then generated files will 
+            generate noritications on attribute changed.
+
+             If 'false', DVM notification generation will be ignored.";
+          type boolean;
+          default false;
+        }
 
         leaf format {
           description 

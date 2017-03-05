@@ -503,6 +503,15 @@ static void
     }
 
     ses_putchar(scb, '\n');
+
+    if (cp->isuser && cp->isdvm && cp->isnotif)
+    {
+    	ses_putstr(scb, (const xmlChar *)"\n#include <time.h>\n");
+    	ses_putstr(scb, (const xmlChar *)"\n#include <pthread.h>\n");
+    	ses_putstr(scb, (const xmlChar *)"\n#include <stdlib.h>\n");
+    	ses_putstr(scb, (const xmlChar *)"\n#include \"utils.h\"\n");
+    }
+
 } /* write_c_includes */
 
 
@@ -631,6 +640,12 @@ static void
             }
         }
 #endif
+
+    if (cp->isuser && cp->isdvm && cp->isnotif)
+    {
+    	ses_putstr(scb, (const xmlChar *)"static int32 attribute_value_changed_counter = 0;\n");
+    	ses_putstr(scb, (const xmlChar *)"static int32 problem_counter = 0;\n");
+    }
 
     if (cp->format != NCX_CVTTYP_YC) {
         /* user can put static var init inline */
@@ -765,6 +780,16 @@ static void
     c_define_t      *cdef;
     int32            indent = cp->indent, i = 0;
     uint32           keycount;
+    ncx_btype_t      btyp;
+    obj_template_t	*rootobj =  obj_get_root_node(obj);
+    boolean 		objNeedsNotif = false;
+    if (rootobj != NULL)
+    {
+    	if (rootobj->objtype == OBJ_TYP_LIST)
+    	{
+    		objNeedsNotif = true;
+    	}
+    }
 
     cdef = find_path_cdefine(objnameQ, obj);
     if (cdef == NULL) {
@@ -845,6 +870,114 @@ static void
     ses_putstr_indent(scb, 
                       (const xmlChar *)"status_t res = NO_ERR;",
                       indent);
+
+    if (cp->isdvm && cp->isnotif && cp->isuser && objNeedsNotif)
+    {
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"xmlChar dateAndTime[256];",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"time_t t = time(NULL);",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"struct tm tm = *localtime(&t);",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"struct timeval tv;",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"int millisec;",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"xmlChar *obj_id_ref[XPATH_MAX_LENGTH];",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"xmlChar *attr_name[XPATH_MAX_LENGTH];",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"xmlChar* new_value[XPATH_MAX_LENGTH];",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"\ngettimeofday(&tv, NULL);",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"if (millisec>=1000)",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"{ // Allow for rounding up to nearest second",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"millisec -=1000;",
+						  indent + indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"tv.tv_sec++;",
+						  indent + indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"millisec /= 100;",
+						  indent + indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"}",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"sprintf(dateAndTime, \"%04d-%02d-%02dT%02d:%02d:%02d.%01dZ\",",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);",
+						  indent);
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"sprintf(attr_name, \"",
+						  indent);
+    	write_c_str(scb, obj_get_name(obj), 0);
+
+    	ses_putstr(scb, (const xmlChar *)"\");");
+
+    	ses_putstr_indent(scb,
+						  (const xmlChar *)"sprintf(obj_id_ref, \"%s\",",
+						  indent);
+
+    	write_c_key_values(scb, rootobj, objnameQ, 1, indent+indent);
+
+    	ses_putstr(scb, (const xmlChar *)");");
+
+    	btyp = obj_get_basetype(obj);
+    	if (typ_is_string(btyp) ||
+    	                   btyp == NCX_BT_IDREF ||
+    	                   btyp == NCX_BT_INSTANCE_ID ||
+    	                   btyp == NCX_BT_UNION ||
+    	                   btyp == NCX_BT_LEAFREF ||
+    	                   btyp == NCX_BT_BINARY ||
+						   btyp == NCX_BT_ENUM ||
+						   btyp == NCX_BT_BITS)
+    	{
+    		ses_putstr_indent(scb,
+						  (const xmlChar *)"sprintf(new_value, \"%s\", VAL_STR(newval));",
+						  indent);
+    	}
+    	else if (typ_is_number(btyp))
+    	{
+    		ses_putstr_indent(scb,
+						  (const xmlChar *)"sprintf(new_value, ",
+						  indent);
+    		write_c_val_format_specifier_type(scb, obj);
+    		ses_putstr(scb, (const xmlChar *)", ");
+			write_c_val_macro_type(scb, obj);
+			ses_putstr(scb, (const xmlChar *)"(newval));");
+    	}
+    	else if (btyp == NCX_BT_BOOLEAN)
+    	{
+    		ses_putstr_indent(scb,
+						  (const xmlChar *)"sprintf(new_value, \"%s\", (VAL_BOOL(newval)) ? \"true\" : \"false\");",
+						  indent);
+    	}
+
+    }
+
     if (!cp->isuser) {
         /* generate static vars */
         ses_putstr_indent(scb, 
@@ -979,6 +1112,14 @@ static void
         ses_putstr_indent(scb, (const xmlChar *)"case OP_EDITOP_MERGE:",
                           indent+indent);
 
+        if (cp->isdvm && cp->isnotif && cp->isuser && objNeedsNotif)
+        {
+        	ses_putstr_indent(scb, (const xmlChar *)"u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,",
+						  indent+indent + indent);
+        	ses_putstr_indent(scb, (const xmlChar *)"dateAndTime, obj_id_ref, attr_name, new_value);",
+						  indent+indent + indent);
+        }
+
         if (cp->format == NCX_CVTTYP_CPP_TEST) {
             /* generate callback logging */
             ses_putstr_indent(scb,
@@ -991,6 +1132,14 @@ static void
         ses_putstr_indent(scb, (const xmlChar *)"break;", indent*3);
         ses_putstr_indent(scb, (const xmlChar *)"case OP_EDITOP_REPLACE:",
                           indent+indent);
+
+        if (cp->isdvm && cp->isnotif && cp->isuser && objNeedsNotif)
+        {
+        	ses_putstr_indent(scb, (const xmlChar *)"u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,",
+						  indent+indent + indent);
+        	ses_putstr_indent(scb, (const xmlChar *)"dateAndTime, obj_id_ref, attr_name, new_value);",
+						  indent+indent + indent);
+        }
 
         if (cp->format == NCX_CVTTYP_CPP_TEST) {
             /* generate callback logging */

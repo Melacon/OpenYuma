@@ -12135,4 +12135,19 @@ boolean
 	return FALSE;
 }
 
+/********************************************************************
+ * Check whether an object has a list child that is read-only
+ *
+ * \param in: obj - the object to check
+ * \return boolean - true if the object has a child of type OBJ_TYP_LIST that is not config
+ *********************************************************************/
+obj_template_t*
+    obj_get_root_node (obj_template_t *obj)
+{
+	if (obj_is_root(obj->parent))
+		return obj;
+	else
+		return obj_get_root_node(obj->parent);
+}
+
 /* END obj.c */

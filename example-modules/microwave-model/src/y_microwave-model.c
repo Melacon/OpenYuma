@@ -41,6 +41,8 @@
 #include "u_microwave-model.h"
 #include "y_microwave-model.h"
 
+#include <time.h>
+
 #define MAX_NUM_OF_LIST_KEYS 2048
 
 /* module static variables */
@@ -81,6 +83,7 @@ static val_value_t *mw_ethernet_container_pac_val;
 #ifdef u_microwave_model_F_hybrid_microwave
 static val_value_t *mw_tdm_container_pac_val;
 #endif /* u_microwave_model_F_hybrid_microwave */
+static int32 attribute_value_changed_counter = 0;
 
 /********************************************************************
 * FUNCTION y_microwave_model_init_static_vars
