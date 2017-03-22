@@ -14,8 +14,8 @@
 
     User SIL module
     module microwave-model
-    revision 2017-02-17
-    namespace urn:onf:params:xml:ns:yang:MicrowaveModel
+    revision 2017-03-20
+    namespace urn:onf:params:xml:ns:yang:microwave-model
     organization ONF (Open Networking Foundation) Open Transport Working Group - Wireless Transport Project
 
  */
@@ -5122,7 +5122,7 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_status_loop_back_k
     res = val_set_simval_obj(
         dstval,
         dstval->obj,
-        (loop_back_kind_up) != NULL ? loop_back_kind_up : (const xmlChar *)"non");
+        (loop_back_kind_up) != NULL ? loop_back_kind_up : (const xmlChar *)"none");
     
     if (loop_back_kind_up != NULL)
     {

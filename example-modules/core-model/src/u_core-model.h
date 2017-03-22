@@ -16,8 +16,8 @@
 
     User SIL header
     module core-model
-    revision 2017-02-17
-    namespace urn:onf:params:xml:ns:yang:CoreModel
+    revision 2017-03-20
+    namespace urn:onf:params:xml:ns:yang:core-model
     organization ONF (Open Networking Foundation) Open Transport Working Group - Wireless Transport Project
 
  */
