@@ -2715,6 +2715,11 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
     sprintf(obj_id_ref, "%s",
         k_mw_air_interface_pac_layer_protocol);
     sprintf(new_value, "%d", VAL_INT16(newval));
+    xmlChar *xpathexpr[XPATH_MAX_LENGTH];
+    char interface_name[100];
+	int result;
+	sscanf(k_mw_air_interface_pac_layer_protocol, "lp-%s", interface_name, &result);
+	char command[100];
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_mw_air_interface_pac_air_interface_configuration_modulation_max_edit callback for %s phase",
@@ -2736,10 +2741,36 @@ status_t u_microwave_model_mw_air_interface_pac_air_interface_configuration_modu
         case OP_EDITOP_MERGE:
             u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
             dateAndTime, obj_id_ref, attr_name, new_value);
+			sprintf(xpathexpr, "/mw-air-interface-pac[layer-protocol=\"%s\"]/air-interface-status/modulation-cur",
+				k_mw_air_interface_pac_layer_protocol);
+            res = set_value_for_xpath(xpathexpr, new_value);
+            sprintf(xpathexpr, "/mw-air-interface-pac[layer-protocol=\"%s\"]/air-interface-status/last-status-change",
+				k_mw_air_interface_pac_layer_protocol);
+			res = set_value_for_xpath(xpathexpr, dateAndTime);
+
+			sprintf(command, "tc qdisc add dev %s handle 1: root htb default 11", interface_name);
+			result = system(command);
+			sprintf(command, "tc class add dev %s parent 1: classid 1:1 htb rate 1000Mbps", interface_name);
+			result = system(command);
+			sprintf(command, "tc class add dev %s parent 1:1 classid 1:11 htb rate 4Mbit", interface_name);
+			result = system(command);
             break;
         case OP_EDITOP_REPLACE:
             u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
             dateAndTime, obj_id_ref, attr_name, new_value);
+			sprintf(xpathexpr, "/mw-air-interface-pac[layer-protocol=\"%s\"]/air-interface-status/modulation-cur",
+				k_mw_air_interface_pac_layer_protocol);
+			res = set_value_for_xpath(xpathexpr, new_value);
+			sprintf(xpathexpr, "/mw-air-interface-pac[layer-protocol=\"%s\"]/air-interface-status/last-status-change",
+			k_mw_air_interface_pac_layer_protocol);
+			res = set_value_for_xpath(xpathexpr, dateAndTime);
+
+			sprintf(command, "tc qdisc add dev %s handle 1: root htb default 11", interface_name);
+			result = system(command);
+			sprintf(command, "tc class add dev %s parent 1: classid 1:1 htb rate 1000Mbps", interface_name);
+			result = system(command);
+			sprintf(command, "tc class add dev %s parent 1:1 classid 1:11 htb rate 4Mbit", interface_name);
+			result = system(command);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -23923,13 +23954,22 @@ status_t u_microwave_model_init2 (void)
 {
     status_t res = NO_ERR;
 
-    pthread_t gen_notif_thread;
+    pthread_t gen_notif_thread, update_status_values_thread;
 
 	if(pthread_create(&gen_notif_thread, NULL, generate_notifications, NULL))
 	{
 		return SET_ERROR(ERR_NCX_OPERATION_FAILED);
 	}
 
+	if(pthread_create(&update_status_values_thread, NULL, update_status_values, NULL))
+	{
+		return SET_ERROR(ERR_NCX_OPERATION_FAILED);
+	}
+
+	if (pthread_mutex_init(&lock, NULL) != 0)
+	{
+		return SET_ERROR(ERR_NCX_OPERATION_FAILED);
+	}
     /* put your init2 code here */
 
     return res;
@@ -23942,6 +23982,7 @@ status_t u_microwave_model_init2 (void)
 ********************************************************************/
 void u_microwave_model_cleanup (void)
 {
+	pthread_mutex_destroy(&lock);
     /* put your cleanup code here */
     
 } /* u_microwave_model_cleanup */

@@ -83,4 +83,7 @@ void print_path_for_element(val_value_t *elem);
 
 status_t get_xpath_string_for_element(val_value_t *elem, xmlChar **buff);
 
+pthread_mutex_t lock;
+void update_status_values();
+
 #endif /* UTILS_H_ */

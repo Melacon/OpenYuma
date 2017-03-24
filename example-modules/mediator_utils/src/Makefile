@@ -30,7 +30,7 @@ LINK?=$(CC)
 LINT=splint
 LINTFLAGS= '-weak -macrovarprefix "m_"'
 LIBTOOL=ar
-LFLAGS=-lm
+LFLAGS=-lm -lpthread
 LPATH=-L$(LIB_INST)
 
 CEES = $(wildcard *.c)
@@ -52,7 +52,7 @@ $(TARGET)/%.o: %.c
 
 # Common library rule
 
-$(LIB_INST)/lib%.a: $(OBJS)
+$(LIB_INST)/lib%.a: $(OBJS) 
 	$(LIBTOOL) cr $@ $(OBJS)
 	ranlib $@
 

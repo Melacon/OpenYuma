@@ -6,6 +6,7 @@
  */
 
 #include "utils.h"
+#include <pthread.h>
 
 /*
  * UTILS
@@ -30,7 +31,24 @@ static status_t
 
 static xmlDocPtr get_xml_doc_ptr();
 
+
 xmlDocPtr xmlDefaultValues = NULL;
+
+void update_status_values()
+{
+	while (TRUE)
+	{
+		pthread_mutex_lock(&lock);
+
+		xmlFreeDoc(xmlDefaultValues);
+		xmlDefaultValues = xmlParseFile(filename);
+		YUMA_ASSERT(xmlDefaultValues == NULL, pthread_mutex_unlock(&lock); return, "Could not load XML file from path=%s. Aborting the update_status_values()", filename);
+
+		pthread_mutex_unlock(&lock);
+
+		sleep(5);
+	}
+}
 
 static xmlDocPtr get_xml_doc_ptr()
 {
@@ -38,7 +56,6 @@ static xmlDocPtr get_xml_doc_ptr()
 	{
 		return xmlDefaultValues;
 	}
-//	xmlDocPtr xmlDefaultValues = NULL;
 
 	xmlInitParser();
 
@@ -49,8 +66,56 @@ static xmlDocPtr get_xml_doc_ptr()
 	return xmlDefaultValues;
 }
 
+status_t set_value_for_xpath(const xmlChar* xPathExpression, const xmlChar* new_value)
+{
+	pthread_mutex_lock(&lock);
+	xmlDocPtr doc = get_xml_doc_ptr();
+	xmlChar appended_xPathExpression[2048];
+
+	sprintf(appended_xPathExpression, "/status%s", xPathExpression);
+
+	xmlXPathContextPtr xpathCtx;
+	xmlXPathObjectPtr xpathObj;
+
+	xpathCtx = xmlXPathNewContext(doc);
+	YUMA_ASSERT(xpathCtx == NULL, pthread_mutex_unlock(&lock); return ERR_INTERNAL_VAL, "xmlXPathNewContext failed!");
+
+	xpathObj = xmlXPathEvalExpression(appended_xPathExpression, xpathCtx);
+	YUMA_ASSERT(xpathObj == NULL, pthread_mutex_unlock(&lock); return ERR_INTERNAL_VAL, "xmlXPathEvalExpression failed!");
+
+	int size = (xpathObj->nodesetval) ? xpathObj->nodesetval->nodeNr : 0;
+
+	YUMA_ASSERT(TRUE, NOP, "Setting new_value=%s in xPath=%s", new_value, xPathExpression);
+
+	for (int i = size - 1; i >= 0; --i)
+	{
+		YUMA_ASSERT(xpathObj->nodesetval->nodeTab[i] == NULL, continue, "NULL object received!");
+
+		xmlNodeSetContent(xpathObj->nodesetval->nodeTab[i], new_value);
+
+		if (xpathObj->nodesetval->nodeTab[i]->type != XML_NAMESPACE_DECL)
+		{
+			xpathObj->nodesetval->nodeTab[i] = NULL;
+		}
+	}
+
+    xmlXPathFreeObject(xpathObj);
+    xmlXPathFreeContext(xpathCtx);
+
+    FILE *file = fopen(filename, "w");
+
+    xmlDocDump(file, doc);
+
+    fclose(file);
+
+	pthread_mutex_unlock(&lock);
+
+	return NO_ERR;
+}
+
 char* get_value_from_xpath(const xmlChar* xPathExpression)
 {
+	pthread_mutex_lock(&lock);
 	xmlDocPtr doc = get_xml_doc_ptr();
 	char* resultString = NULL;
 	xmlChar appended_xPathExpression[2048];
@@ -80,13 +145,14 @@ char* get_value_from_xpath(const xmlChar* xPathExpression)
 
     xmlXPathFreeObject(xpathObj);
     xmlXPathFreeContext(xpathCtx);
-//    xmlFreeDoc(doc);
+    pthread_mutex_unlock(&lock);
 
     return resultString;
 }
 
 status_t get_list_from_xpath(const xmlChar* xPathExpression, char **list_elements, int *num_of_elements)
 {
+	pthread_mutex_lock(&lock);
 	xmlDocPtr doc = get_xml_doc_ptr();
     xmlChar appended_xPathExpression[2048];
 
@@ -115,7 +181,7 @@ status_t get_list_from_xpath(const xmlChar* xPathExpression, char **list_element
 
     xmlXPathFreeObject(xpathObj);
     xmlXPathFreeContext(xpathCtx);
-//    xmlFreeDoc(doc);
+    pthread_mutex_unlock(&lock);
 
     return NO_ERR;
 }
