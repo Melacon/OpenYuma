@@ -16,7 +16,7 @@
 
     User SIL header
     module microwave-model
-    revision 2017-03-20
+    revision 2017-03-24
     namespace urn:onf:params:xml:ns:yang:microwave-model
     organization ONF (Open Networking Foundation) Open Transport Working Group - Wireless Transport Project
 
@@ -327,8 +327,9 @@ typedef struct y_microwave_model_T_co_channel_group_logical_termination_point_ {
     xmlChar *logical_termination_point;
 } y_microwave_model_T_co_channel_group_logical_termination_point;
 
-/* container /co-channel-group */
+/* list /co-channel-group */
 typedef struct y_microwave_model_T_co_channel_group_ {
+    dlq_hdr_t qhdr;
     xmlChar *co_channel_group_id;
     dlq_hdr_t air_interface_list;
     xmlChar *sort_of_co_channel_group;
@@ -4443,6 +4444,7 @@ extern status_t u_microwave_model_mw_air_interface_pac_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -4453,7 +4455,8 @@ extern status_t u_microwave_model_co_channel_group_co_channel_group_id_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval);
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id);
 
 
 /********************************************************************
@@ -4465,6 +4468,7 @@ extern status_t u_microwave_model_co_channel_group_co_channel_group_id_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -4475,7 +4479,8 @@ extern status_t u_microwave_model_co_channel_group_air_interface_list_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval);
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id);
 
 
 /********************************************************************
@@ -4487,6 +4492,7 @@ extern status_t u_microwave_model_co_channel_group_air_interface_list_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -4497,7 +4503,8 @@ extern status_t u_microwave_model_co_channel_group_sort_of_co_channel_group_edit
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval);
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id);
 
 
 /********************************************************************
@@ -4509,6 +4516,7 @@ extern status_t u_microwave_model_co_channel_group_sort_of_co_channel_group_edit
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -4519,7 +4527,8 @@ extern status_t u_microwave_model_co_channel_group_logical_termination_point_edi
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval);
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id);
 
 
 /********************************************************************
@@ -4531,6 +4540,7 @@ extern status_t u_microwave_model_co_channel_group_logical_termination_point_edi
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -4541,7 +4551,8 @@ extern status_t u_microwave_model_co_channel_group_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval);
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id);
 
 
 /********************************************************************

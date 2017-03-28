@@ -14,7 +14,7 @@
 
     User SIL module
     module microwave-model
-    revision 2017-03-20
+    revision 2017-03-24
     namespace urn:onf:params:xml:ns:yang:microwave-model
     organization ONF (Open Networking Foundation) Open Transport Working Group - Wireless Transport Project
 
@@ -9924,6 +9924,7 @@ status_t u_microwave_model_mw_air_interface_pac_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -9934,9 +9935,34 @@ status_t u_microwave_model_co_channel_group_co_channel_group_id_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval)
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "co-channel-group-id");
+    sprintf(obj_id_ref, "%s",
+        k_co_channel_group_co_channel_group_id);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_co_channel_group_co_channel_group_id_edit callback for %s phase",
@@ -9956,8 +9982,12 @@ status_t u_microwave_model_co_channel_group_co_channel_group_id_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -9987,6 +10017,7 @@ status_t u_microwave_model_co_channel_group_co_channel_group_id_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -9997,9 +10028,34 @@ status_t u_microwave_model_co_channel_group_air_interface_list_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval)
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "air-interface-list");
+    sprintf(obj_id_ref, "%s",
+        k_co_channel_group_co_channel_group_id);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_co_channel_group_air_interface_list_edit callback for %s phase",
@@ -10019,8 +10075,12 @@ status_t u_microwave_model_co_channel_group_air_interface_list_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10050,6 +10110,7 @@ status_t u_microwave_model_co_channel_group_air_interface_list_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -10060,9 +10121,34 @@ status_t u_microwave_model_co_channel_group_sort_of_co_channel_group_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval)
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "sort-of-co-channel-group");
+    sprintf(obj_id_ref, "%s",
+        k_co_channel_group_co_channel_group_id);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_co_channel_group_sort_of_co_channel_group_edit callback for %s phase",
@@ -10082,8 +10168,12 @@ status_t u_microwave_model_co_channel_group_sort_of_co_channel_group_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10113,6 +10203,7 @@ status_t u_microwave_model_co_channel_group_sort_of_co_channel_group_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -10123,9 +10214,34 @@ status_t u_microwave_model_co_channel_group_logical_termination_point_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval)
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "logical-termination-point");
+    sprintf(obj_id_ref, "%s",
+        k_co_channel_group_co_channel_group_id);
+    sprintf(new_value, "%s", VAL_STR(newval));
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_co_channel_group_logical_termination_point_edit callback for %s phase",
@@ -10145,8 +10261,12 @@ status_t u_microwave_model_co_channel_group_logical_termination_point_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;
@@ -10176,6 +10296,7 @@ status_t u_microwave_model_co_channel_group_logical_termination_point_edit (
 * 
 * INPUTS:
 *     see agt/agt_cb.h for details
+*     k_ parameters are ancestor list key values.
 * 
 * RETURNS:
 *     error status
@@ -10186,9 +10307,33 @@ status_t u_microwave_model_co_channel_group_edit (
     agt_cbtyp_t cbtyp,
     op_editop_t editop,
     val_value_t *newval,
-    val_value_t *curval)
+    val_value_t *curval,
+    const xmlChar *k_co_channel_group_co_channel_group_id)
 {
     status_t res = NO_ERR;
+    xmlChar dateAndTime[256];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    struct timeval tv;
+    int millisec;
+    xmlChar *obj_id_ref[XPATH_MAX_LENGTH];
+    xmlChar *attr_name[XPATH_MAX_LENGTH];
+    xmlChar* new_value[XPATH_MAX_LENGTH];
+    
+    gettimeofday(&tv, NULL);
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000)
+    { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+        millisec /= 100;
+    }
+    sprintf(dateAndTime, "%04d-%02d-%02dT%02d:%02d:%02d.%01dZ",
+    tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+    tm.tm_hour, tm.tm_min, tm.tm_sec, millisec/100);
+    sprintf(attr_name, "co-channel-group");
+    sprintf(obj_id_ref, "%s",
+        k_co_channel_group_co_channel_group_id);
 
     if (LOGDEBUG) {
         log_debug("\nEnter u_microwave_model_co_channel_group_edit callback for %s phase",
@@ -10208,8 +10353,12 @@ status_t u_microwave_model_co_channel_group_edit (
         case OP_EDITOP_LOAD:
             break;
         case OP_EDITOP_MERGE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_REPLACE:
+            u_microwave_model_attribute_value_changed_notification_send(attribute_value_changed_counter++,
+            dateAndTime, obj_id_ref, attr_name, new_value);
             break;
         case OP_EDITOP_CREATE:
             break;

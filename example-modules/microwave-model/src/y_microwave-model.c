@@ -14,7 +14,7 @@
 
     Yuma SIL module
     module microwave-model
-    revision 2017-03-20
+    revision 2017-03-24
     namespace urn:onf:params:xml:ns:yang:microwave-model
     organization ONF (Open Networking Foundation) Open Transport Working Group - Wireless Transport Project
 
@@ -11106,13 +11106,16 @@ static status_t microwave_model_co_channel_group_co_channel_group_id_edit (
 {
     status_t res = NO_ERR;
     val_value_t *errorval = (curval) ? curval : newval;
+    val_value_t *lastkey = NULL;
+    const xmlChar *k_co_channel_group_co_channel_group_id = VAL_STRING(agt_get_key_value(errorval, &lastkey));
 
     if (LOGDEBUG) {
         log_debug("\nEnter microwave_model_co_channel_group_co_channel_group_id_edit callback for %s phase",
             agt_cbtype_name(cbtyp));
     }
 
-    res = u_microwave_model_co_channel_group_co_channel_group_id_edit(scb, msg, cbtyp, editop, newval, curval);
+    res = u_microwave_model_co_channel_group_co_channel_group_id_edit(scb, msg, cbtyp, editop, newval, curval,
+        k_co_channel_group_co_channel_group_id);
 
     if (res != NO_ERR) {
         agt_record_error(
@@ -11154,13 +11157,16 @@ static status_t microwave_model_co_channel_group_air_interface_list_edit (
 {
     status_t res = NO_ERR;
     val_value_t *errorval = (curval) ? curval : newval;
+    val_value_t *lastkey = NULL;
+    const xmlChar *k_co_channel_group_co_channel_group_id = VAL_STRING(agt_get_key_value(errorval, &lastkey));
 
     if (LOGDEBUG) {
         log_debug("\nEnter microwave_model_co_channel_group_air_interface_list_edit callback for %s phase",
             agt_cbtype_name(cbtyp));
     }
 
-    res = u_microwave_model_co_channel_group_air_interface_list_edit(scb, msg, cbtyp, editop, newval, curval);
+    res = u_microwave_model_co_channel_group_air_interface_list_edit(scb, msg, cbtyp, editop, newval, curval,
+        k_co_channel_group_co_channel_group_id);
 
     if (res != NO_ERR) {
         agt_record_error(
@@ -11202,13 +11208,16 @@ static status_t microwave_model_co_channel_group_sort_of_co_channel_group_edit (
 {
     status_t res = NO_ERR;
     val_value_t *errorval = (curval) ? curval : newval;
+    val_value_t *lastkey = NULL;
+    const xmlChar *k_co_channel_group_co_channel_group_id = VAL_STRING(agt_get_key_value(errorval, &lastkey));
 
     if (LOGDEBUG) {
         log_debug("\nEnter microwave_model_co_channel_group_sort_of_co_channel_group_edit callback for %s phase",
             agt_cbtype_name(cbtyp));
     }
 
-    res = u_microwave_model_co_channel_group_sort_of_co_channel_group_edit(scb, msg, cbtyp, editop, newval, curval);
+    res = u_microwave_model_co_channel_group_sort_of_co_channel_group_edit(scb, msg, cbtyp, editop, newval, curval,
+        k_co_channel_group_co_channel_group_id);
 
     if (res != NO_ERR) {
         agt_record_error(
@@ -11250,13 +11259,16 @@ static status_t microwave_model_co_channel_group_logical_termination_point_edit 
 {
     status_t res = NO_ERR;
     val_value_t *errorval = (curval) ? curval : newval;
+    val_value_t *lastkey = NULL;
+    const xmlChar *k_co_channel_group_co_channel_group_id = VAL_STRING(agt_get_key_value(errorval, &lastkey));
 
     if (LOGDEBUG) {
         log_debug("\nEnter microwave_model_co_channel_group_logical_termination_point_edit callback for %s phase",
             agt_cbtype_name(cbtyp));
     }
 
-    res = u_microwave_model_co_channel_group_logical_termination_point_edit(scb, msg, cbtyp, editop, newval, curval);
+    res = u_microwave_model_co_channel_group_logical_termination_point_edit(scb, msg, cbtyp, editop, newval, curval,
+        k_co_channel_group_co_channel_group_id);
 
     if (res != NO_ERR) {
         agt_record_error(
@@ -11298,13 +11310,16 @@ static status_t microwave_model_co_channel_group_edit (
 {
     status_t res = NO_ERR;
     val_value_t *errorval = (curval) ? curval : newval;
+    val_value_t *lastkey = NULL;
+    const xmlChar *k_co_channel_group_co_channel_group_id = VAL_STRING(agt_get_key_value(errorval, &lastkey));
 
     if (LOGDEBUG) {
         log_debug("\nEnter microwave_model_co_channel_group_edit callback for %s phase",
             agt_cbtype_name(cbtyp));
     }
 
-    res = u_microwave_model_co_channel_group_edit(scb, msg, cbtyp, editop, newval, curval);
+    res = u_microwave_model_co_channel_group_edit(scb, msg, cbtyp, editop, newval, curval,
+        k_co_channel_group_co_channel_group_id);
 
     if (res == NO_ERR && cbtyp == AGT_CB_COMMIT) {
         res = agt_check_cache(&co_channel_group_val, newval, curval, editop);
